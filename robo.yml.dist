@@ -1,0 +1,32 @@
+name: mywebsite
+
+s3:
+  version: new-latest
+  region: eu-west-1
+  upload_bucket: backups
+
+platform:
+  root: /app/
+  files_directory: web/sites/default/files/uploads/
+  backup_path: backups/
+
+drush:
+  alias_group: !name
+  alias: local
+  path: vendor/bin/drush
+
+drupal:
+  root: web/
+  files_path: web/sites/default/files/uploads
+  excludes:
+    - js/
+    - css/
+    - styles/
+    - translations/
+    - languages/
+    - config/
+rsync:
+  db_dump_filename: db--dump.sql
+
+vcs:
+  target_branch: master

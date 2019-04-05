@@ -1,0 +1,19 @@
+{
+    "name": "WondrousLLC/psh_toolbelt",
+    "description": "Platform sh tools",
+    "scripts": {
+        "phar": "composer robo phar:build",
+        "robo": "robo --ansi --load-from $(pwd)/RoboFile.php"
+    },
+    "require": {
+        "consolidation/robo": "^1.4",
+        "platformsh/config-reader": "^2.1",
+        "aws/aws-sdk-php": "^3.91",
+        "sentry/sentry": "^2.0",
+        "php-http/curl-client": "^2.0",
+        "guzzlehttp/psr7": "^1.5",
+        "boedah/robo-drush": "^4.2",
+        "nuvoleweb/robo-config": "^0.2.2"
+    },
+    "license": "MIT"
+}

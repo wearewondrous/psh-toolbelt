@@ -63,8 +63,7 @@ storage:
     region: eu-west-1
     upload_bucket: backups
 platform:
-  id: 12345xyz              # replaced by .platform/local/project.yaml or robo.yml
-  host: eu.platform.sh      # replaced by .platform/local/project.yaml or robo.yml
+  host: eu.platform.sh
   domain: my-website.com
   mounts:
     temp: tmp
@@ -93,7 +92,7 @@ drupal:
         machine_name: development
         folder: dev
 drush:
-  alias_group: my-website   # replaced by .platform/local/project.yaml or robo.yml
+  alias_group: my-website
   alias: local
   path: vendor/bin/drush
 drupal_vm:

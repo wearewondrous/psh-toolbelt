@@ -19,7 +19,7 @@ abstract class BaseCommands extends Tasks {
 
   const FILE_DELIMITER = '--';
 
-  const DATETIME_FORMAT = 'Y-m-dTH:i:s';
+  const DATETIME_FORMAT = 'c';
 
   const DATE_FORMAT = 'Y-m-d';
 

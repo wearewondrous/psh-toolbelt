@@ -56,6 +56,8 @@ File `wearewondrous/psh-toolbelt/robo.yml.dist` contents:
 
 ```yaml
 storage:
+  backup:
+    max_age: 432000         # 60 * 60 * 24 * 5
   s3:
     version: new-latest
     region: eu-west-1

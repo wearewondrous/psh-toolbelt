@@ -30,6 +30,29 @@ class BackupCommands extends BaseCommands {
   private $projectPrefix;
 
   /**
+   * Command post-initialization.
+   *
+   * @hook post-init
+   */
+  public function initVars(): void {
+    $this->validateEnvVars();
+    $this->projectPrefix = implode('', [
+      Robo::Config()->get('drush.alias_group') . '-',
+      Robo::Config()->get('platform.id') . self::FILE_DELIMITER,
+    ]);
+    $this->sentryClient = new Raven_Client(getenv('SENTRY_DSN'));
+    $this->s3Client = new S3Client([
+      'version' => Robo::Config()->get('storage.s3.version'),
+      'region' => Robo::Config()->get('storage.s3.region'),
+      'credentials' => [
+        'key' => getenv('AWS_ACCESS_KEY_ID'),
+        'secret' => getenv('AWS_SECRET_KEY_ID'),
+      ],
+    ]);
+    $this->s3Client->registerStreamWrapper();
+  }
+
+  /**
    * Backup current branch to AWS, including files and db
    *
    * @param array $opt
@@ -52,27 +75,11 @@ class BackupCommands extends BaseCommands {
       return;
     }
 
-    $this->validatePshConfig();
-    $this->projectPrefix = implode('', [
-      Robo::Config()->get('drush.alias_group') . '-',
-      $this->pshConfig->project . '--',
-    ]);
-
     $prefix = implode('', [
       $this->projectPrefix,
-      $this->pshConfig->branch . '--',
+      $this->pshConfig->branch . self::FILE_DELIMITER,
       date(self::DATETIME_FORMAT),
     ]);
-    $this->sentryClient = new Raven_Client(getenv('SENTRY_DSN'));
-    $this->s3Client = new S3Client([
-      'version' => Robo::Config()->get('storage.s3.version'),
-      'region' => Robo::Config()->get('storage.s3.region'),
-      'credentials' => [
-        'key' => getenv('AWS_ACCESS_KEY_ID'),
-        'secret' => getenv('AWS_SECRET_KEY_ID'),
-      ],
-    ]);
-    $this->s3Client->registerStreamWrapper();
 
     $this->dbDumpAndUpload($prefix);
     $this->archiveAndUploadFiles($prefix);
@@ -86,7 +93,7 @@ class BackupCommands extends BaseCommands {
   /**
    * @throws \Exception
    */
-  private function validatePshConfig(): void {
+  private function validateEnvVars(): void {
     $variables = [
       'AWS_ACCESS_KEY_ID',
       'AWS_SECRET_KEY_ID',
@@ -95,7 +102,7 @@ class BackupCommands extends BaseCommands {
 
     foreach ($variables as $variable) {
       if (!getenv($variable)) {
-        throw new Exception(sprintf('Environment variable %s missing from platform.sh config', $variable));
+        throw new Exception(sprintf('Environment variable %s missing', $variable));
       }
     }
   }
@@ -110,7 +117,7 @@ class BackupCommands extends BaseCommands {
       return TRUE;
     }
     // look for env var and in PLATFORM_VARIABLES
-    if (getenv('BACKUP_THIS_BRANCH') || $this->pshConfig->variable('BACKUP_THIS_BRANCH', false)) {
+    if (getenv('BACKUP_THIS_BRANCH') || $this->pshConfig->variable('BACKUP_THIS_BRANCH', FALSE)) {
       return TRUE;
     }
 
@@ -118,7 +125,7 @@ class BackupCommands extends BaseCommands {
   }
 
   /**
-   * Remove remote backup files that are older than BACKUP_MAX_AGE (5 days).
+   * Remove remote backup files that are older than storage.backup.max_age (defaults to 5 days).
    */
   private function cleanupRemote(): void {
     $dir = "s3://" . implode('/', [
@@ -143,14 +150,11 @@ class BackupCommands extends BaseCommands {
         continue;
       }
 
-      if (is_dir($dir . $file)) {
-        $lastModified = filemtime($dir . $file . '/.');
-        $now = time();
+      $dirPath = $dir . '/' . $file;
 
-        if ($now - $lastModified >= self::BACKUP_MAX_AGE) {
-          $removedFolders[] = $dir . $file;
-          unlink($dir . $file);
-        }
+      if (is_dir($dirPath) && $this->isBackupOutdated($dirPath)) {
+        $removedFolders[] = $dirPath;
+        unlink($dirPath);
       }
     }
 
@@ -161,6 +165,29 @@ class BackupCommands extends BaseCommands {
         'level' => 'info',
       ]);
     }
+  }
+
+  /**
+   * @param string $dirPath
+   *
+   * @return bool
+   */
+  private function isBackupOutdated(string $dirPath): bool {
+    $lastModified = $this->getLastModifiedFromFolder($dirPath);
+
+    return time() - $lastModified >= (int) Robo::Config()->get('storage.backup.max_age');
+  }
+
+  /**
+   * @param string $folderName
+   *
+   * @return int
+   */
+  private function getLastModifiedFromFolder(string $folderName): int {
+    $fileParts = explode(self::FILE_DELIMITER, $folderName);
+    $datetime = array_pop($fileParts);
+
+    return strtotime($datetime);
   }
 
   /**

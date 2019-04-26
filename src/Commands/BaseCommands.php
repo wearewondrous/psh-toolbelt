@@ -17,11 +17,11 @@ abstract class BaseCommands extends Tasks {
 
   use loadTasks;
 
-  const DATETIME_FORMAT = 'Y-m-d-H:i:s';
+  const FILE_DELIMITER = '--';
+
+  const DATETIME_FORMAT = 'Y-m-dTH:i:s';
 
   const DATE_FORMAT = 'Y-m-d';
-
-  const BACKUP_MAX_AGE = 60 * 60 * 24 * 5; // 5 days
 
   const VCS_MASTER = 'master';
 
@@ -43,6 +43,13 @@ abstract class BaseCommands extends Tasks {
    */
   public function initEnvironmentVars(): void {
     Robo::Config()->replace(SiteSettings::getRoboConfig()->export());
+    $this->stopOnFail();  // halt, if native cli commands fail
+    $this->drushAlias = implode('', [
+      '@',
+      Robo::Config()->get('drush.alias_group'),
+      '.',
+      Robo::Config()->get('drush.alias'),
+    ]);
 
     $this->pshConfig = new Config();
 
@@ -51,20 +58,5 @@ abstract class BaseCommands extends Tasks {
     }
 
     Robo::Config()->setDefault('drush.path', 'drush');
-  }
-
-  /**
-   * Command initialization.
-   *
-   * @hook post-init
-   */
-  public function initVars(): void {
-    $this->stopOnFail();  // halt, if native cli commands fail
-    $this->drushAlias = implode('', [
-      '@',
-      Robo::Config()->get('drush.alias_group'),
-      '.',
-      Robo::Config()->get('drush.alias'),
-    ]);
   }
 }

@@ -100,8 +100,8 @@ class UpdateCommands extends BaseCommands {
 
     $this->yell("Pull DB from remote", 50, 'default');
     $dbFileName = implode('', [
-      Robo::Config()->get('drush.alias_group') . '--',
-      $branch . '--',
+      Robo::Config()->get('drush.alias_group') . self::FILE_DELIMITER,
+      $branch . self::FILE_DELIMITER,
       date(self::DATE_FORMAT),
       self::DB_DUMP_SUFFIX,
       '.sql',

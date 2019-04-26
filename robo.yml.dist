@@ -2,6 +2,8 @@
 # No starting slashes if not absolute path
 
 storage:
+  backup:
+    max_age: 432000         # 60 * 60 * 24 * 5
   s3:
     version: latest
     region: eu-west-1
@@ -41,7 +43,7 @@ drupal:
         folder: dev
 
 drush:
-alias_group: my-website   # replaced by .platform/local/project.yaml or robo.yml
+  alias_group: my-website   # replaced by .platform/local/project.yaml or robo.yml
   alias: local
   path: vendor/bin/drush
 

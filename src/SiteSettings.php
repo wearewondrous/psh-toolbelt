@@ -63,19 +63,11 @@ class SiteSettings {
    */
   public static function getRoboConfig(): \Robo\Config\Config {
     $root_dir = self::getRootDir();
-    $config = Robo::createConfiguration([
-      $root_dir . '.platform/local/project.yaml',
+
+    return Robo::createConfiguration([
       __DIR__ . '/../robo.yml.dist',
-    ]);
-    $config->setDefault('platform.id', $config->get('id', ''));
-    $config->setDefault('platform.host', $config->get('host', ''));
-    $config->setDefault('drush.alias_group', $config->get('alias-group', ''));
-
-    Robo::loadConfiguration([
       $root_dir . 'robo.yml',
-    ], $config);
-
-    return $config;
+    ]);
   }
 
   /**

@@ -35,10 +35,18 @@ class BackupCommands extends BaseCommands {
    * @hook post-init
    */
   public function initVars(): void {
+    if (!$this->pshConfig->isValidPlatform()) {
+      die("Not in a Platform.sh Environment.");
+    }
+
+    if (!$this->pshConfig->hasRelationship('database')) {
+      die("Not an Environment with a database.");
+    }
+
     $this->validateEnvVars();
     $this->projectPrefix = implode('', [
       Robo::Config()->get('drush.alias_group') . '-',
-      Robo::Config()->get('platform.id') . self::FILE_DELIMITER,
+      $this->pshConfig->project . self::FILE_DELIMITER,
     ]);
     $this->sentryClient = new Raven_Client(getenv('SENTRY_DSN'));
     $this->s3Client = new S3Client([
@@ -63,13 +71,6 @@ class BackupCommands extends BaseCommands {
   public function backupBranch($opt = [
     'force|f' => FALSE,
   ]): void {
-    if (!$this->pshConfig->isValidPlatform()) {
-      die("Not in a Platform.sh Environment.");
-    }
-
-    if (!$this->pshConfig->hasRelationship('database')) {
-      die("Not an Environment with a database.");
-    }
 
     if (!$this->backupCurrentBranch($opt['force'])) {
       return;

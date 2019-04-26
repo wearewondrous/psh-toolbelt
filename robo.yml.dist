@@ -1,32 +1,64 @@
-name: mywebsite
+# No trailing slashes
+# No starting slashes if not absolute path
 
-s3:
-  version: new-latest
-  region: eu-west-1
-  upload_bucket: backups
+storage:
+  s3:
+    version: latest
+    region: eu-west-1
+    upload_bucket: backups
 
 platform:
-  root: /app/
-  files_directory: web/sites/default/files/uploads/
-  backup_path: backups/
+  id: 12345xyz              # replaced by .platform/local/project.yaml or robo.yml
+  host: eu.platform.sh      # replaced by .platform/local/project.yaml or robo.yml
+  domain: my-website.com
+  mounts:
+    temp: tmp
+    config: remote-config
+
+drupal:
+  hash_salt: 1234567890abcdefghijklmnopqlmnopqrstuvwxyz12345678
+  config_sync_directory: config/drupal
+  public_files_directory: web/sites/default/files
+  private_files_directory: private
+  excludes:
+    - .htaccess
+    - js
+    - css
+    - styles
+    - translations
+    - languages
+    - config
+  config:
+    splits:
+      default:
+        machine_name: default
+        folder: default
+      prod:
+        machine_name: production
+        folder: prod
+      dev:
+        machine_name: development
+        folder: dev
 
 drush:
-  alias_group: !name
+alias_group: my-website   # replaced by .platform/local/project.yaml or robo.yml
   alias: local
   path: vendor/bin/drush
 
-drupal:
-  root: web/
-  files_path: web/sites/default/files/uploads
-  excludes:
-    - js/
-    - css/
-    - styles/
-    - translations/
-    - languages/
-    - config/
-rsync:
-  db_dump_filename: db--dump.sql
+solr_relationships:
+#  solr:
+#    core: main
+#    machine_name: default
+#  solr2:
+#    core: extraindex
+#    machine_name: extraindex
 
-vcs:
-  target_branch: master
+drupal_vm:
+  disable_cache: true
+  host: my-website.wndrs
+  mysql:
+    database: drupal
+    hostname: 127.0.0.1
+    password: drupal
+    port: 3306
+    user: drupal

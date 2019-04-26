@@ -1,19 +1,56 @@
 {
-    "name": "WondrousLLC/psh_toolbelt",
-    "description": "Platform sh tools",
-    "scripts": {
-        "phar": "composer robo phar:build",
-        "robo": "robo --ansi --load-from $(pwd)/RoboFile.php"
+    "name": "wearewondrous/psh-toolbelt",
+    "description": "Platform sh tools for a drupal 8 installation.",
+    "authors": [
+        {
+            "name": "WONDROUS LLC",
+            "homepage": "http://www.wearewondrous.com"
+        }
+    ],
+    "keywords": [
+        "platform.sh",
+        "drupal-8",
+        "drupal_vm"
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/consolidation/robo"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "wearewondrous\\PshToolbelt\\": "src/"
+        }
     },
+    "bin":["psh-toolbelt"],
     "require": {
-        "consolidation/robo": "^1.4",
-        "platformsh/config-reader": "^2.1",
         "aws/aws-sdk-php": "^3.91",
-        "sentry/sentry": "^2.0",
-        "php-http/curl-client": "^2.0",
+        "boedah/robo-drush": "dev-master",
+        "consolidation/robo": "1.4.9",
         "guzzlehttp/psr7": "^1.5",
-        "boedah/robo-drush": "^4.2",
-        "nuvoleweb/robo-config": "^0.2.2"
+        "nuvoleweb/robo-config": "^0.2.2",
+        "php": ">=7.1",
+        "php-http/curl-client": "^2.0",
+        "platformsh/config-reader": "^2.1",
+        "sentry/sentry": "^1.7.0",
+        "vlucas/phpdotenv": "^3.3@dev",
+        "wearewondrous/config_split_psh_export": "~1.0",
+        "cweagans/composer-patches": "~1.0"
     },
-    "license": "MIT"
+    "extra": {
+        "patches": {
+            "boedah/robo-drush": {
+                "Drupal 8 cache clear": "https://patch-diff.githubusercontent.com/raw/boedah/robo-drush/pull/16.patch"
+            }
+        }
+    },
+    "type": "library",
+    "license": "GPL-2.0+",
+    "homepage": "https://github.com/wearewondrous/psh-toolbelt",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://github.com/wearewondrous/psh-toolbelt/issues",
+        "source": "https://github.com/wearewondrous/psh-toolbelt.git"
+    }
 }

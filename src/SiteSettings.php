@@ -247,7 +247,6 @@ class SiteSettings {
       $this->config[$searchApiMachineName]['backend_config']['connector_config']['host'] = $solr['host'];
       $this->config[$searchApiMachineName]['backend_config']['connector_config']['port'] = $solr['port'];
       $this->config[$searchApiMachineName]['backend_config']['connector_config']['core'] = $config['core'];
-      $this->config[$searchApiMachineName]['backend_config']['connector_config']['path'] = '/' . $solr['path'];
     }
   }
 

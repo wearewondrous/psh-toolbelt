@@ -11,7 +11,7 @@ class SiteSettings {
   /**
    * @var \Platformsh\ConfigReader\Config
    */
-  protected $platformsh;
+  protected $pshConfig;
 
   /**
    * @var array
@@ -52,7 +52,7 @@ class SiteSettings {
     $this->databases =& $databases;
     $this->config_directories =& $config_directories;
 
-    $this->platformsh = new \Platformsh\ConfigReader\Config();
+    $this->pshConfig = new \Platformsh\ConfigReader\Config();
     $this->roboConfig = self::getRoboConfig();
   }
 
@@ -78,6 +78,15 @@ class SiteSettings {
   }
 
   /**
+   * @param string $variable
+   *
+   * @return string|null
+   */
+  protected function getEnv(string $variable): ?string {
+    return $this->pshConfig->variable($variable, getenv($variable));
+  }
+
+  /**
    * Primary function to set Drupal 8 config, depending on environment.
    */
   public function setDefaults(): void {
@@ -90,7 +99,7 @@ class SiteSettings {
     ]);
     $this->settings['file_private_path'] = '../' . $this->roboConfig->get('drupal.private_files_directory');
     // Sentry dsn key
-    $this->config['raven.settings']['client_key'] = getenv('SENTRY_DSN');
+    $this->config['raven.settings']['client_key'] = $this->getEnv('SENTRY_DSN');
     $this->settings['hash_salt'] = $this->roboConfig->get('drupal.hash_salt');
     $settings['file_scan_ignore_directories'] = [
       'node_modules',
@@ -101,7 +110,7 @@ class SiteSettings {
     $this->setConfigSplit();
     $this->setSolr();
 
-    if ($this->platformsh->isValidPlatform()) {
+    if ($this->pshConfig->isValidPlatform()) {
       return;
     }
 
@@ -134,7 +143,7 @@ class SiteSettings {
       $prodPattern
     );
 
-    if ($this->platformsh->inRuntime()) {
+    if ($this->pshConfig->inRuntime()) {
       return;
     }
 
@@ -159,7 +168,7 @@ class SiteSettings {
     $this->config[$configSplit['prod']['machine_name']]['status'] = FALSE;
     $this->config[$configSplit['dev']['machine_name']]['status'] = TRUE;
 
-    if (!$this->platformsh->isValidPlatform()) {
+    if (!$this->pshConfig->isValidPlatform()) {
       return;
     }
     // enable production config split
@@ -219,7 +228,7 @@ class SiteSettings {
    * Solr config for production if enabled.
    */
   public function setSolr(): void {
-    if (!$this->platformsh->inRuntime()) {
+    if (!$this->pshConfig->inRuntime()) {
       return;
     }
 
@@ -228,11 +237,11 @@ class SiteSettings {
     }
 
     foreach ($this->roboConfig->get('solr_relationships') as $key => $config) {
-      if (!$this->platformsh->hasRelationship($key)) {
+      if (!$this->pshConfig->hasRelationship($key)) {
         continue;
       }
 
-      $solr = $this->platformsh->credentials($key);
+      $solr = $this->pshConfig->credentials($key);
       $searchApiMachineName = 'search_api.server.' . $config['machine_name'];
 
       $this->config[$searchApiMachineName]['backend_config']['connector_config']['host'] = $solr['host'];

@@ -145,6 +145,8 @@ Optionally, to backup a branch that is not `master`, add this to the platform.sh
 env:BACKUP_THIS_BRANCH=1
 ```
 
+Note: optionally, the variables can live as [actual environment variables](https://docs.platform.sh/development/variables.html#top-level-environment-variables) or as [Platform.sh variables](https://docs.platform.sh/development/variables.html#environment-variables). 
+
 ### `composer.json` and `.env` (optional)
 
 For local development and tests with env vars, add to your root project `composer.json`:

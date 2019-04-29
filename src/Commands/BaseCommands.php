@@ -59,4 +59,13 @@ abstract class BaseCommands extends Tasks {
 
     Robo::Config()->setDefault('drush.path', 'drush');
   }
+
+  /**
+   * @param string $variable
+   *
+   * @return string|null
+   */
+  protected function getEnv(string $variable): ?string {
+    return $this->pshConfig->variable($variable, getenv($variable));
+  }
 }

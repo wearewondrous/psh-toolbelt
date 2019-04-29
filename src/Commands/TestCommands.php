@@ -2,10 +2,7 @@
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-use Aws\S3\S3Client;
-use Platformsh\ConfigReader\Config;
 use Robo\Robo;
-use Robo\Tasks;
 
 /**
  * This is project's console commands configuration for Robo task runner.

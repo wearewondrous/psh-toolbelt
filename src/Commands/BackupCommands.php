@@ -48,13 +48,13 @@ class BackupCommands extends BaseCommands {
       Robo::Config()->get('drush.alias_group') . '-',
       $this->pshConfig->project . self::FILE_DELIMITER,
     ]);
-    $this->sentryClient = new Raven_Client(getenv('SENTRY_DSN'));
+    $this->sentryClient = new Raven_Client($this->getEnv('SENTRY_DSN'));
     $this->s3Client = new S3Client([
       'version' => Robo::Config()->get('storage.s3.version'),
       'region' => Robo::Config()->get('storage.s3.region'),
       'credentials' => [
-        'key' => getenv('AWS_ACCESS_KEY_ID'),
-        'secret' => getenv('AWS_SECRET_KEY_ID'),
+        'key' => $this->getEnv('AWS_ACCESS_KEY_ID'),
+        'secret' => $this->getEnv('AWS_SECRET_KEY_ID'),
       ],
     ]);
     $this->s3Client->registerStreamWrapper();
@@ -102,7 +102,7 @@ class BackupCommands extends BaseCommands {
     ];
 
     foreach ($variables as $variable) {
-      if (!getenv($variable)) {
+      if (!$this->getEnv($variable)) {
         throw new Exception(sprintf('Environment variable %s missing', $variable));
       }
     }
@@ -118,7 +118,7 @@ class BackupCommands extends BaseCommands {
       return TRUE;
     }
     // look for env var and in PLATFORM_VARIABLES
-    if (getenv('BACKUP_THIS_BRANCH') || $this->pshConfig->variable('BACKUP_THIS_BRANCH', FALSE)) {
+    if ($this->getEnv('BACKUP_THIS_BRANCH')) {
       return TRUE;
     }
 
@@ -126,7 +126,8 @@ class BackupCommands extends BaseCommands {
   }
 
   /**
-   * Remove remote backup files that are older than storage.backup.max_age (defaults to 5 days).
+   * Remove remote backup files that are older than storage.backup.max_age
+   * (defaults to 5 days).
    */
   private function cleanupRemote(): void {
     $dir = "s3://" . implode('/', [
@@ -176,7 +177,8 @@ class BackupCommands extends BaseCommands {
   private function isBackupOutdated(string $dirPath): bool {
     $lastModified = $this->getLastModifiedFromFolder($dirPath);
 
-    return time() - $lastModified >= (int) Robo::Config()->get('storage.backup.max_age');
+    return time() - $lastModified >= (int) Robo::Config()
+        ->get('storage.backup.max_age');
   }
 
   /**

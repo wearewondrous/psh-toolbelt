@@ -28,7 +28,6 @@
         "platformsh/config-reader": "^2.1",
         "sentry/sentry": "^1.7.0",
         "vlucas/phpdotenv": "^3.3@dev",
-        "wearewondrous/config_split_psh_export": "~1.0",
         "cweagans/composer-patches": "~1.0"
     },
     "extra": {

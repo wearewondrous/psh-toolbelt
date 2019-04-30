@@ -18,16 +18,17 @@ if (!$platformsh->inRuntime()) {
 
 include 'settings.platformsh.php';
 
-/**
- * Alters the configuration directories.
- *
- * @see: Drush\Commands\config_split_psh_export\ConfigSplitPshExportCommands
- */
-function preCommandConfigSplitPshExport() {
-  global $config_directories;
-  global $config;
-  $configSplit = SiteSettings::getConfigSplitArray(SiteSettings::getRoboConfig());
+if (PHP_SAPI == 'cli') {
+  $context = drush_get_context();
 
-  $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
-  $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
+  if (is_array($context) && !empty($context) && isset($context['argv']) && isset($context['argv'][1])) {
+    $argument = $context['argv'][1];
+
+    if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
+      $configSplit = SiteSettings::getConfigSplitArray(SiteSettings::getRoboConfig());
+
+      $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
+      $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
+    }
+  }
 }

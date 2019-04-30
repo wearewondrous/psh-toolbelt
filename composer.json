@@ -12,12 +12,6 @@
         "drupal-8",
         "drupal_vm"
     ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/consolidation/robo"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "wearewondrous\\PshToolbelt\\": "src/"
@@ -29,7 +23,6 @@
         "boedah/robo-drush": "dev-master",
         "consolidation/robo": "1.4.9",
         "guzzlehttp/psr7": "^1.5",
-        "nuvoleweb/robo-config": "^0.2.2",
         "php": ">=7.1",
         "php-http/curl-client": "^2.0",
         "platformsh/config-reader": "^2.1",

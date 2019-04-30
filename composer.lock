@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e1deda129a8dbb6ae51fe02847cdf55",
+    "content-hash": "63736ab851e1c3688ce15a742c4678a0",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -1230,48 +1230,6 @@
                 "jsonpath"
             ],
             "time": "2016-12-03T22:08:25+00:00"
-        },
-        {
-            "name": "nuvoleweb/robo-config",
-            "version": "0.2.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nuvoleweb/robo-config.git",
-                "reference": "ce4c3285f2cbc692d96f5f2d57eb2c5068aeadd2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nuvoleweb/robo-config/zipball/ce4c3285f2cbc692d96f5f2d57eb2c5068aeadd2",
-                "reference": "ce4c3285f2cbc692d96f5f2d57eb2c5068aeadd2",
-                "shasum": ""
-            },
-            "require": {
-                "consolidation/robo": "~1"
-            },
-            "require-dev": {
-                "drupal/coder": "^8.2",
-                "phpro/grumphp": "^0.11.4",
-                "phpunit/phpunit": "^5"
-            },
-            "type": "robo-tasks",
-            "autoload": {
-                "psr-4": {
-                    "NuvoleWeb\\Robo\\Task\\Config\\": "src",
-                    "NuvoleWeb\\Robo\\Tests\\": "tests"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Antonio De Marco",
-                    "email": "antonio@nuvole.org"
-                }
-            ],
-            "description": "CI/developer-friendly configuration processor for Robo.",
-            "time": "2018-08-22T06:38:44+00:00"
         },
         {
             "name": "php-http/curl-client",
@@ -2767,45 +2725,6 @@
                 "environment"
             ],
             "time": "2019-03-23T10:56:16+00:00"
-        },
-        {
-            "name": "wearewondrous/config_split_psh_export",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wearewondrous/config_split_psh_export.git",
-                "reference": "be2cf21a0f88804a22adb4c54a37c515d95f5a67"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wearewondrous/config_split_psh_export/zipball/be2cf21a0f88804a22adb4c54a37c515d95f5a67",
-                "reference": "be2cf21a0f88804a22adb4c54a37c515d95f5a67",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "type": "drupal-drush",
-            "extra": {
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9"
-                    }
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "WONDROUS LLC",
-                    "homepage": "http://www.wearewondrous.com"
-                }
-            ],
-            "description": "Drush 9 alter hook to export the production config on a Platform.sh environment",
-            "homepage": "https://github.com/wearewondrous/config_split_psh_export",
-            "time": "2019-04-30T09:53:49+00:00"
         }
     ],
     "packages-dev": [],

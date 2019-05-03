@@ -90,4 +90,47 @@ class ConfigFileReader {
   public function getProjectLocalConfigDistFilename() : string {
     return $this->getProjectLocalConfigFilename() . '.dist';
   }
+
+  /**
+   * Render a config split array for default, dev, and production info
+   *
+   * @return array
+   */
+  public function getConfigSplitFromRoboConfig() : array {
+    return [
+      'default' => [
+        'machine_name' => implode('.', [
+          'config_split.config_split',
+          $this->roboConfig->get('drupal.config.splits.default.machine_name'),
+        ]),
+        'folder' => implode('/', [
+          $this->rootDirectory,
+          $this->roboConfig->get('platform.mounts.config'),
+          $this->roboConfig->get('drupal.config.splits.default.folder'),
+        ]),
+      ],
+      'prod' => [
+        'machine_name' => implode('.', [
+          'config_split.config_split',
+          $this->roboConfig->get('drupal.config.splits.prod.machine_name'),
+        ]),
+        'folder' => implode('/', [
+          $this->rootDirectory,
+          $this->roboConfig->get('platform.mounts.config'),
+          $this->roboConfig->get('drupal.config.splits.prod.folder'),
+        ]),
+      ],
+      'dev' => [
+        'machine_name' => implode('.', [
+          'config_split.config_split',
+          $this->roboConfig->get('drupal.config.splits.dev.machine_name'),
+        ]),
+        'folder' => implode('/', [
+          $this->rootDirectory,
+          $this->roboConfig->get('platform.mounts.config'),
+          $this->roboConfig->get('drupal.config.splits.dev.folder'),
+        ]),
+      ],
+    ];
+  }
 }

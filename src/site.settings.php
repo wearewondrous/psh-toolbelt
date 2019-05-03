@@ -28,7 +28,7 @@ if (PHP_SAPI == 'cli') {
     $argument = $context['argv'][1];
 
     if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
-      $configSplit = SiteSettings::getConfigSplitArray($configFileReader->getRoboConfig());
+      $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
 
       $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
       $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];

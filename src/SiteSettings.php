@@ -165,54 +165,6 @@ class SiteSettings {
   }
 
   /**
-   * Render a config split array for default, dev, and production info
-   *
-   * @param RoboConfig $roboConfig
-   *
-   * @return array
-   */
-  public static function getConfigSplitArray(RoboConfig $roboConfig): array {
-    return [
-      'default' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.default.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.default.folder'),
-        ]),
-      ],
-      'prod' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.prod.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.prod.folder'),
-        ]),
-      ],
-      'dev' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.dev.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.dev.folder'),
-        ]),
-      ],
-    ];
-  }
-
-  /**
    * Solr config for production if enabled.
    */
   public function setSolr(): void {

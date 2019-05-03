@@ -1,0 +1,22 @@
+language: php
+php:
+  - "7.1"
+  - "7.2"
+  - "7.3"
+
+env:
+  global:
+    - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-ansi --no-progress --no-suggest"
+
+install:
+  - travis_retry composer install --no-interaction --no-suggest
+
+script:
+  - ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+notifications:
+  email: false

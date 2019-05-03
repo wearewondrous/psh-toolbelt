@@ -2,6 +2,8 @@
 
 namespace wearewondrous\PshToolbelt;
 
+use Platformsh\ConfigReader\Config as PlatformshConfig;
+use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
 
 class SiteSettings {
@@ -34,7 +36,7 @@ class SiteSettings {
   protected $config_directories;
 
   /**
-   * @var \Robo\Config\Config
+   * @var RoboConfig
    */
   protected $roboConfig;
 
@@ -52,21 +54,19 @@ class SiteSettings {
     $this->databases =& $databases;
     $this->config_directories =& $config_directories;
 
-    $this->pshConfig = new \Platformsh\ConfigReader\Config();
+    $this->pshConfig = new PlatformshConfig();
     $this->roboConfig = self::getRoboConfig();
   }
 
   /**
    * Get merged yml config.
    *
-   * @return \Robo\Config\Config
+   * @return RoboConfig
    */
-  public static function getRoboConfig(): \Robo\Config\Config {
-    $root_dir = self::getRootDir();
-
+  public static function getRoboConfig(): RoboConfig {
     return Robo::createConfiguration([
-      __DIR__ . '/../robo.yml.dist',
-      $root_dir . 'robo.yml',
+      self::getProjectLocalConfigDistFilename(),
+      self::getProjectLocalConfigFilename(),
     ]);
   }
 
@@ -179,11 +179,11 @@ class SiteSettings {
   /**
    * Render a config split array for default, dev, and production info
    *
-   * @param \Robo\Config\Config $roboConfig
+   * @param RoboConfig $roboConfig
    *
    * @return array
    */
-  public static function getConfigSplitArray(\Robo\Config\Config $roboConfig): array {
+  public static function getConfigSplitArray(RoboConfig $roboConfig): array {
     return [
       'default' => [
         'machine_name' => implode('.', [
@@ -339,5 +339,35 @@ class SiteSettings {
       'prefix' => '',
       'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
     ];
+  }
+
+  /**
+   * @return array
+   */
+  private static function getAcceptableProjectLocalConfigFilenames(): array {
+    $acceptableFilenames = [
+      'robo',
+      'toolbelt'
+    ];
+
+    return array_map(function ($acceptableFilename) {
+      return $acceptableFilename . '.yml';
+    }, $acceptableFilenames);
+  }
+
+  /**
+   * @return string
+   */
+  private static function getProjectLocalConfigFilename() : string {
+    return array_filter(self::getAcceptableProjectLocalConfigFilenames(), function ($acceptableProjectLocalConfigFilename) {
+      return file_exists(self::getRootDir() . $acceptableProjectLocalConfigFilename);
+    });
+  }
+
+  /**
+   * @return string
+   */
+  private static function getProjectLocalConfigDistFilename() : string {
+    return self::getProjectLocalConfigFilename() . '.dist';
   }
 }

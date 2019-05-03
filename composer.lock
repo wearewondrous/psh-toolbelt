@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "63736ab851e1c3688ce15a742c4678a0",
+    "content-hash": "754ff039239dda0c3cb25351e66fee3b",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -91,7 +91,7 @@
         },
         {
             "name": "boedah/robo-drush",
-            "version": "dev-master",
+            "version": "4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/boedah/robo-drush.git",
@@ -2730,14 +2730,14 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "boedah/robo-drush": 20,
-        "vlucas/phpdotenv": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=7.1"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.1.3"
+    }
 }

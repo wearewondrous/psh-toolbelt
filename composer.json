@@ -1,9 +1,9 @@
 {
     "name": "wearewondrous/psh-toolbelt",
-    "description": "Platform sh tools for a drupal 8 installation.",
+    "description": "Platform sh tools for a Drupal 8 installation.",
     "authors": [
         {
-            "name": "WONDROUS LLC",
+            "name": "WONDROUS LTD",
             "homepage": "http://www.wearewondrous.com"
         }
     ],
@@ -16,6 +16,15 @@
         "psr-4": {
             "wearewondrous\\PshToolbelt\\": "src/"
         }
+    },
+    "config": {
+        "process-timeout": 1200,
+        "prefered-install": "dist",
+        "platform": {
+            "php": "7.1"
+        },
+        "discard-changes": true,
+        "sort-packages": true
     },
     "bin":["psh-toolbelt"],
     "require": {

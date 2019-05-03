@@ -42,12 +42,18 @@ class SiteSettings {
   protected $roboConfig;
 
   /**
+   * @var \wearewondrous\PshToolbelt\ConfigFileReader
+   */
+  private $configFileReader;
+
+  /**
    * SiteSettings constructor.
    *
    * @param array $settings
    * @param array $config
    * @param array $databases
    * @param array $config_directories
+   * @param string $rootDirectory
    */
   public function __construct(array &$settings, array &$config, array &$databases, array &$config_directories) {
     $this->settings =& $settings;
@@ -56,26 +62,8 @@ class SiteSettings {
     $this->config_directories =& $config_directories;
 
     $this->pshConfig = new PlatformshConfig();
-    $this->roboConfig = self::getRoboConfig();
-  }
-
-  /**
-   * Get merged yml config.
-   *
-   * @return RoboConfig
-   */
-  public static function getRoboConfig(): RoboConfig {
-    return Robo::createConfiguration([
-      self::getProjectLocalConfigDistFilename(),
-      self::getProjectLocalConfigFilename(),
-    ]);
-  }
-
-  /**
-   * @return string
-   */
-  public static function getRootDir(): string {
-    return str_replace(self::SRC_PATH, '', __DIR__);
+    $this->configFileReader = new ConfigFileReader();
+    $this->roboConfig = $this->configFileReader->getRoboConfig();
   }
 
   /**
@@ -341,35 +329,5 @@ class SiteSettings {
       'prefix' => '',
       'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
     ];
-  }
-
-  /**
-   * @return array
-   */
-  private static function getAcceptableProjectLocalConfigFilenames(): array {
-    $acceptableFilenames = [
-      'robo',
-      'toolbelt'
-    ];
-
-    return array_map(function ($acceptableFilename) {
-      return $acceptableFilename . '.yml';
-    }, $acceptableFilenames);
-  }
-
-  /**
-   * @return string
-   */
-  private static function getProjectLocalConfigFilename() : string {
-    return array_filter(self::getAcceptableProjectLocalConfigFilenames(), function ($acceptableProjectLocalConfigFilename) {
-      return file_exists(self::getRootDir() . $acceptableProjectLocalConfigFilename);
-    });
-  }
-
-  /**
-   * @return string
-   */
-  private static function getProjectLocalConfigDistFilename() : string {
-    return self::getProjectLocalConfigFilename() . '.dist';
   }
 }

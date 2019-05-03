@@ -6,7 +6,7 @@ use Boedah\Robo\Task\Drush\loadTasks;
 use Platformsh\ConfigReader\Config;
 use Robo\Robo;
 use Robo\Tasks;
-use wearewondrous\PshToolbelt\SiteSettings;
+use wearewondrous\PshToolbelt\ConfigFileReader;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -37,12 +37,21 @@ abstract class BaseCommands extends Tasks {
   protected $pshConfig;
 
   /**
+   * @var \wearewondrous\PshToolbelt\ConfigFileReader
+   */
+  protected $configFileReader;
+
+  public function __construct() {
+    $this->configFileReader = new ConfigFileReader();
+  }
+
+  /**
    * Command initialization.
    *
    * @hook init
    */
   public function initEnvironmentVars(): void {
-    Robo::Config()->replace(SiteSettings::getRoboConfig()->export());
+    Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
     $this->stopOnFail();  // halt, if native cli commands fail
     $this->drushAlias = implode('', [
       '@',

@@ -90,8 +90,8 @@ class SiteSettings {
    * Primary function to set Drupal 8 config, depending on environment.
    */
   public function setDefaults(): void {
-    $settings['trusted_host_patterns'] = [];
-    $settings['update_free_access'] = FALSE;
+    $this->settings['trusted_host_patterns'] = [];
+    $this->settings['update_free_access'] = FALSE;
     $this->config_directories[CONFIG_SYNC_DIRECTORY] = implode('/', [
       '..',
       $this->roboConfig->get('drupal.config_sync_directory'),
@@ -101,7 +101,7 @@ class SiteSettings {
     // Sentry dsn key
     $this->config['raven.settings']['client_key'] = $this->getEnv('SENTRY_DSN');
     $this->settings['hash_salt'] = $this->roboConfig->get('drupal.hash_salt');
-    $settings['file_scan_ignore_directories'] = [
+    $this->settings['file_scan_ignore_directories'] = [
       'node_modules',
       'bower_components',
     ];
@@ -314,13 +314,13 @@ class SiteSettings {
 
     if ($this->roboConfig->get('drupal_vm.disable_cache')) {
       // disable frontend preprocesing
-      $config['system.performance']['css']['preprocess'] = FALSE;
-      $config['system.performance']['js']['preprocess'] = FALSE;
+      $this->config['system.performance']['css']['preprocess'] = FALSE;
+      $this->config['system.performance']['js']['preprocess'] = FALSE;
       // Cache settings, use redis but do not cache render
-      $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/default/local.services.yml';
-      $settings['cache']['bins']['render'] = 'cache.backend.null';
-      $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
-      $settings['cache']['bins']['page'] = 'cache.backend.null';
+      $this->settings['container_yamls'][] = DRUPAL_ROOT . '/sites/default/local.services.yml';
+      $this->settings['cache']['bins']['render'] = 'cache.backend.null';
+      $this->settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
+      $this->settings['cache']['bins']['page'] = 'cache.backend.null';
     }
 
     $this->settings['deployment_identifier'] = \Drupal::VERSION;

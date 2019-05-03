@@ -4,7 +4,6 @@ namespace wearewondrous\PshToolbelt;
 
 use Platformsh\ConfigReader\Config as PlatformshConfig;
 use Robo\Config\Config as RoboConfig;
-use Robo\Robo;
 
 class SiteSettings {
 

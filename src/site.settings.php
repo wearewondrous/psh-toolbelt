@@ -1,11 +1,14 @@
 <?php
 
 use Platformsh\ConfigReader\Config;
+use wearewondrous\PshToolbelt\ConfigFileReader;
 use wearewondrous\PshToolbelt\SiteSettings;
 
 $databases = [];
 $config_directories = [];
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
+
+$configFileReader = new ConfigFileReader();
 
 $siteSettings = new SiteSettings($settings, $config, $databases, $config_directories);
 $siteSettings->setDefaults();
@@ -25,7 +28,7 @@ if (PHP_SAPI == 'cli') {
     $argument = $context['argv'][1];
 
     if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
-      $configSplit = SiteSettings::getConfigSplitArray(SiteSettings::getRoboConfig());
+      $configSplit = SiteSettings::getConfigSplitArray($configFileReader->getRoboConfig());
 
       $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
       $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];

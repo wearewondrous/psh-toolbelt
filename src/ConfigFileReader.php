@@ -5,6 +5,7 @@ namespace wearewondrous\PshToolbelt;
 
 use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class ConfigFileReader {
 
@@ -75,6 +76,10 @@ class ConfigFileReader {
     $realProjectConfigFiles = array_filter($this->getAcceptableProjectLocalConfigFilenames(), function ($acceptableProjectLocalConfigFilename) {
       return file_exists( $this->rootDirectory . '/' .$acceptableProjectLocalConfigFilename);
     });
+
+    if(!$realProjectConfigFiles) {
+      throw new FileNotFoundException('No valid configuration files found');
+    }
 
     return reset($realProjectConfigFiles);
   }

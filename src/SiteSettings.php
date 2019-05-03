@@ -7,6 +7,7 @@ use Robo\Robo;
 class SiteSettings {
 
   const SRC_PATH = 'vendor/wearewondrous/psh-toolbelt/src';
+  const CACHE_404_TTL = 3600;
 
   /**
    * @var \Platformsh\ConfigReader\Config
@@ -262,6 +263,7 @@ class SiteSettings {
     $this->settings['redis.connection']['interface'] = 'PhpRedis';
     $this->settings['redis.connection']['host'] = '127.0.0.1';
     $this->settings['cache']['default'] = 'cache.backend.redis';
+    $this->settings['cache_ttl_4xx'] = self::CACHE_404_TTL;
 
     $class_loader = require DRUPAL_ROOT . '/../vendor/autoload.php';
     $class_loader->addPsr4('Drupal\\redis\\', 'modules/contrib/redis/src');

@@ -1,16 +1,28 @@
 <?php
 
-use Platformsh\ConfigReader\Config;
+use Platformsh\ConfigReader\Config as PlatformshConfig;
 use wearewondrous\PshToolbelt\SiteSettings;
 
 $databases = [];
 $config_directories = [];
-$settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
+
+$settings['container_yamls'][] = '../services/default.services.yml';
+
+// Load service overrides
+// @DEPRECATED
+if(file_exists($app_root . '/' . $site_path . '/services.yml')) {
+  $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
+}
+
+// Load service overrides
+if(file_exists($app_root . '/' . $site_path . '/override.services.yml')) {
+  $settings['container_yamls'][] = $app_root . '/' . $site_path . '/override.services.yml';
+}
 
 $siteSettings = new SiteSettings($settings, $config, $databases, $config_directories);
 $siteSettings->setDefaults();
 
-$platformsh = new Config();
+$platformsh = new PlatformshConfig();
 
 if (!$platformsh->inRuntime()) {
   return;

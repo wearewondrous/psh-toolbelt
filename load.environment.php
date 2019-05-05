@@ -5,14 +5,17 @@
  */
 
 use Dotenv\Dotenv;
-use wearewondrous\PshToolbelt\SiteSettings;
+use wearewondrous\PshToolbelt\FileSystemHelper;
 
 /**
  * Load any .env file. See /.env.dist.
+ *
  */
 
 try {
-  Dotenv::create(SiteSettings::getRootDir())->safeLoad();
+  $fileSystemHelper = new FileSystemHelper();
+
+  Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
 } catch (Exception $e) {
   // suppressing exception
 }

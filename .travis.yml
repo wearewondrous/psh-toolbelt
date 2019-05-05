@@ -9,7 +9,7 @@ env:
     - DEFAULT_COMPOSER_FLAGS="--no-interaction --no-ansi --no-progress --no-suggest"
 
 install:
-  - travis_retry composer install --no-interaction --no-suggest
+  - travis_retry composer install
 
 script:
   - ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests

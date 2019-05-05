@@ -3,7 +3,6 @@
 namespace wearewondrous\PshToolbelt\Commands;
 
 use Robo\Robo;
-use wearewondrous\PshToolbelt\SiteSettings;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -32,7 +31,7 @@ class UpdateCommands extends BaseCommands {
     }
 
     $activeStash = FALSE;
-    $app_dir = SiteSettings::getRootDir();
+    $app_dir = $this->fileSystemHelper->getRootDir();
     $git = $this->taskGitStack()
       ->stopOnFail()
       ->dir($app_dir);

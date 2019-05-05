@@ -15,7 +15,7 @@ use Robo\Robo;
 class BackupCommands extends BaseCommands {
 
   /**
-   * @var \PshToolbelt\Commands\Raven_Client
+   * @var Raven_Client
    */
   private $sentryClient;
 

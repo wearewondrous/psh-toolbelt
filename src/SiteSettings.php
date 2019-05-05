@@ -52,7 +52,6 @@ class SiteSettings {
    * @param array $config
    * @param array $databases
    * @param array $config_directories
-   * @param string $rootDirectory
    */
   public function __construct(array &$settings, array &$config, array &$databases, array &$config_directories) {
     $this->settings =& $settings;

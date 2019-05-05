@@ -83,7 +83,7 @@ final class ConfigFileReaderTest extends TestCase
   }
 
   /**
-   * @expectedException Symfony\Component\Filesystem\Exception\FileNotFoundException
+   * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException
    */
   public function testGetProjectLocalConfigFilenameWithNoneFailsHard() : void
   {

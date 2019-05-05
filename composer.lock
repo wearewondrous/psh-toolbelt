@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f562c8544a3d4575be38e3130108570",
+    "content-hash": "0f2d8ca79c3bb85e1b781bde1c0e80a1",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -4195,7 +4195,9 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.1",
+        "ext-json": "*",
+        "ext-pdo": "*"
     },
     "platform-dev": [],
     "platform-overrides": {

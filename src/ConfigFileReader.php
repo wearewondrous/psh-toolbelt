@@ -9,31 +9,25 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class ConfigFileReader {
 
-  const SRC_PATH = 'vendor/wearewondrous/psh-toolbelt/src';
-
   /**
    * @var RoboConfig
    */
   protected $roboConfig;
 
   /**
-   * @var string
+   * @var FileSystemHelper
    */
-  private $rootDirectory;
+  protected $fileSystemHelper;
 
   /**
    * SiteSettings constructor.
    *
-   * @param string $rootDirectory
+   * @param string|null $rootDirectory
    */
   public function __construct(string $rootDirectory = null) {
-    if(!$rootDirectory) {
-      $rootDirectory = $this->getRootDir();
-    }
+    $this->fileSystemHelper = new FileSystemHelper($rootDirectory);
 
-    $this->rootDirectory = $rootDirectory;
-
-    $this->roboConfig = $this->getRoboConfig();
+    $this->roboConfig = $this->createRoboConfig();
   }
 
   /**
@@ -41,7 +35,7 @@ class ConfigFileReader {
    *
    * @return RoboConfig
    */
-  public function getRoboConfig(): RoboConfig {
+  public function createRoboConfig(): RoboConfig {
     return Robo::createConfiguration([
       $this->getProjectLocalConfigDistFilename(),
       $this->getProjectLocalConfigFilename(),
@@ -49,10 +43,10 @@ class ConfigFileReader {
   }
 
   /**
-   * @return string
+   * @return RoboConfig
    */
-  public function getRootDir(): string {
-    return str_replace(self::SRC_PATH, '', __DIR__);
+  public function getRoboConfig() : RoboConfig {
+    return $this->roboConfig;
   }
 
   /**
@@ -74,7 +68,7 @@ class ConfigFileReader {
    */
   public function getProjectLocalConfigFilename() : string {
     $realProjectConfigFiles = array_filter($this->getAcceptableProjectLocalConfigFilenames(), function ($acceptableProjectLocalConfigFilename) {
-      return file_exists( $this->rootDirectory . '/' .$acceptableProjectLocalConfigFilename);
+      return file_exists( $this->fileSystemHelper->getRootDir() . '/' .$acceptableProjectLocalConfigFilename);
     });
 
     if(!$realProjectConfigFiles) {
@@ -104,7 +98,7 @@ class ConfigFileReader {
           $this->roboConfig->get('drupal.config.splits.default.machine_name'),
         ]),
         'folder' => implode('/', [
-          $this->rootDirectory,
+          $this->fileSystemHelper->getRootDir(),
           $this->roboConfig->get('platform.mounts.config'),
           $this->roboConfig->get('drupal.config.splits.default.folder'),
         ]),
@@ -115,7 +109,7 @@ class ConfigFileReader {
           $this->roboConfig->get('drupal.config.splits.prod.machine_name'),
         ]),
         'folder' => implode('/', [
-          $this->rootDirectory,
+          $this->fileSystemHelper->getRootDir(),
           $this->roboConfig->get('platform.mounts.config'),
           $this->roboConfig->get('drupal.config.splits.prod.folder'),
         ]),
@@ -126,7 +120,7 @@ class ConfigFileReader {
           $this->roboConfig->get('drupal.config.splits.dev.machine_name'),
         ]),
         'folder' => implode('/', [
-          $this->rootDirectory,
+          $this->fileSystemHelper->getRootDir(),
           $this->roboConfig->get('platform.mounts.config'),
           $this->roboConfig->get('drupal.config.splits.dev.folder'),
         ]),

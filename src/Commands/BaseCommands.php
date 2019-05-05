@@ -3,7 +3,8 @@
 namespace wearewondrous\PshToolbelt\Commands;
 
 use Boedah\Robo\Task\Drush\loadTasks;
-use Platformsh\ConfigReader\Config;
+use wearewondrous\PshToolbelt\FileSystemHelper;
+use Platformsh\ConfigReader\Config as PshConfig;
 use Robo\Robo;
 use Robo\Tasks;
 use wearewondrous\PshToolbelt\ConfigFileReader;
@@ -32,7 +33,7 @@ abstract class BaseCommands extends Tasks {
   protected $drushAlias = '';
 
   /**
-   * @var Platformsh\ConfigReader\Config
+   * @var PshConfig
    */
   protected $pshConfig;
 
@@ -41,8 +42,14 @@ abstract class BaseCommands extends Tasks {
    */
   protected $configFileReader;
 
-  public function __construct() {
-    $this->configFileReader = new ConfigFileReader();
+  /**
+   * @var FileSystemHelper
+   */
+  protected $fileSystemHelper;
+
+  public function __construct(string $rootDirectory = null) {
+    $this->configFileReader = new ConfigFileReader($rootDirectory);
+    $this->fileSystemHelper = new FileSystemHelper($rootDirectory);
   }
 
   /**

@@ -81,6 +81,7 @@
     "license": "GPL-2.0+",
     "homepage": "https://github.com/wearewondrous/psh-toolbelt",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "support": {
         "issues": "https://github.com/wearewondrous/psh-toolbelt/issues",
         "source": "https://github.com/wearewondrous/psh-toolbelt.git"

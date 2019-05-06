@@ -5,8 +5,7 @@
  * @file     site.settings.php
  * @category Wondrous
  * @package  PshToolbelt
- * @author   "Wondrous <admin@wearewondrous.com>"
- * @license  MIT
+ * @author   Wondrous LTD <admin@wearewondrous.com>
  * @link     https://github.com/wearewondrous/psh-toolbelt
  */
 

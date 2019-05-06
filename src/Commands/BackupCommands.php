@@ -223,8 +223,8 @@ class BackupCommands extends BaseCommands
         $fileParts = explode(self::FILE_DELIMITER, $folderName);
         $datetime = array_pop($fileParts);
 
-        if(!$datetime) {
-          return 0;
+        if (!$datetime) {
+            return 0;
         }
 
         return (int) strtotime($datetime);

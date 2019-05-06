@@ -13,9 +13,9 @@ use wearewondrous\PshToolbelt\FileSystemHelper;
  */
 
 try {
-  $fileSystemHelper = new FileSystemHelper();
+    $fileSystemHelper = new FileSystemHelper();
 
-  Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
+    Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
 } catch (Exception $e) {
   // suppressing exception
 }

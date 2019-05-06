@@ -23,3 +23,6 @@ parameters:
     -
       message: '#Call to an undefined method [a-zA-Z0-9\\_]+::replace\(\).#'
       path: %currentWorkingDirectory%/src/Commands/BaseCommands.php
+    -
+      message: '#Parameter \#1 \$roboClass of class [a-zA-Z0-9\\_]+ constructor expects string\|null, array\<int, string\> given.#'
+      path: %currentWorkingDirectory%/psh-toolbelt

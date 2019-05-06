@@ -49,9 +49,9 @@
     "scripts": {
         "post-install-cmd": " ./vendor/bin/phpcs --config-set default_standard PSR12",
         "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php tests",
-        "analyse": "./vendor/bin/phpstan analyse -l 7 src tests",
-        "codestyle": "./vendor/bin/phpcs tests src",
-        "cbf": "./vendor/bin/phpcbf tests src"
+        "analyse": "./vendor/bin/phpstan analyse -l 7 src tests load.environment.php psh-toolbelt",
+        "codestyle": "./vendor/bin/phpcs tests src load.environment.php psh-toolbelt",
+        "cbf": "./vendor/bin/phpcbf tests src load.environment.php psh-toolbelt"
     },
     "extra": {
         "patches": {

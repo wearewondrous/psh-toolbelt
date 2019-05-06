@@ -1,4 +1,14 @@
 <?php
+/**
+ * This file is included by the Drupal sites
+ *
+ * @file     site.settings.php
+ * @category Wondrous
+ * @package  PshToolbelt
+ * @author   "Wondrous <admin@wearewondrous.com>"
+ * @license  MIT
+ * @link     https://github.com/wearewondrous/psh-toolbelt
+ */
 
 use Platformsh\ConfigReader\Config;
 use wearewondrous\PshToolbelt\ConfigFileReader;
@@ -16,22 +26,22 @@ $siteSettings->setDefaults();
 $platformsh = new Config();
 
 if (!$platformsh->inRuntime()) {
-  return;
+    return;
 }
 
-include 'settings.platformsh.php';
+require 'settings.platformsh.php';
 
 if (PHP_SAPI == 'cli') {
-  $context = drush_get_context();
+    $context = drush_get_context();
 
-  if (is_array($context) && !empty($context) && isset($context['argv']) && isset($context['argv'][1])) {
-    $argument = $context['argv'][1];
+    if (is_array($context) && !empty($context) && isset($context['argv']) && isset($context['argv'][1])) {
+        $argument = $context['argv'][1];
 
-    if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
-      $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
+        if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
+            $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
 
-      $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
-      $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
+            $config_directories[CONFIG_SYNC_DIRECTORY] = $configSplit['default']['folder'];
+            $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
+        }
     }
-  }
 }

@@ -9,27 +9,30 @@ use Robo\Robo;
  *
  * @see http://robo.li/
  */
-class TestCommands extends BaseCommands {
+class TestCommands extends BaseCommands
+{
 
-  /**
-   * Print out the current configuration with env overwrites.
-   */
-  public function testVars(): void {
-    $this->say('=== Env vars =============================');
-    print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
-    $this->say('=== Robo vars ============================');
-    print_r(json_encode(Robo::Config()->export(), JSON_PRETTY_PRINT) . "\n");
-  }
+    /**
+     * Print out the current configuration with env overwrites.
+     */
+    public function testVars(): void
+    {
+        $this->say('=== Env vars =============================');
+        print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
+        $this->say('=== Robo vars ============================');
+        print_r(json_encode(Robo::Config()->export(), JSON_PRETTY_PRINT) . "\n");
+    }
 
-  /**
-   * Test the local vm by running drush status
-   *
-   * @throws \Robo\Exception\TaskException
-   */
-  public function testLocalDrush(): void {
-    $this->taskDrushStack(Robo::Config()->get('drush.path'))
-      ->siteAlias($this->drushAlias)
-      ->status()
-      ->run();
-  }
+    /**
+     * Test the local vm by running drush status
+     *
+     * @throws \Robo\Exception\TaskException
+     */
+    public function testLocalDrush(): void
+    {
+        $this->taskDrushStack(Robo::Config()->get('drush.path'))
+            ->siteAlias($this->drushAlias)
+            ->status()
+            ->run();
+    }
 }

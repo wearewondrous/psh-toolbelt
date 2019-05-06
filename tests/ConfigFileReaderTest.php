@@ -11,120 +11,120 @@ use org\bovigo\vfs\vfsStream;
 final class ConfigFileReaderTest extends TestCase
 {
 
-  /**
-   * @var vfsStreamDirectory
-   */
-  public $fileSystem;
+    /**
+     * @var vfsStreamDirectory
+     */
+    public $fileSystem;
 
-  public function setUp()
-  {
-    $structure = [
-      'robo.yml' => 'test',
-      'robo.yml.dist' => 'test',
-    ];
+    public function setUp()
+    {
+        $structure = [
+        'robo.yml' => 'test',
+        'robo.yml.dist' => 'test',
+        ];
 
-    $this->fileSystem = vfsStream::setup('root', null, $structure);
-  }
+        $this->fileSystem = vfsStream::setup('root', null, $structure);
+    }
 
-  public function testGetAcceptableProjectLocalConfigFilenames(): void
-  {
-    $configFileReader = new ConfigFileReader($this->fileSystem->url());
+    public function testGetAcceptableProjectLocalConfigFilenames(): void
+    {
+        $configFileReader = new ConfigFileReader($this->fileSystem->url());
 
-    $this->assertEquals(
-      $configFileReader->getAcceptableProjectLocalConfigFilenames(),
-      ['robo.yml', 'toolbelt.yml']
-    );
-  }
+        $this->assertEquals(
+            $configFileReader->getAcceptableProjectLocalConfigFilenames(),
+            ['robo.yml', 'toolbelt.yml']
+        );
+    }
 
-  public function testGetProjectLocalConfigFilename() : void
-  {
-    $configFileReader = new ConfigFileReader($this->fileSystem->url());
+    public function testGetProjectLocalConfigFilename() : void
+    {
+        $configFileReader = new ConfigFileReader($this->fileSystem->url());
 
-    $this->assertEquals(
-      'robo.yml',
-      $configFileReader->getProjectLocalConfigFilename()
-    );
-  }
+        $this->assertEquals(
+            'robo.yml',
+            $configFileReader->getProjectLocalConfigFilename()
+        );
+    }
 
-  public function testGetProjectLocalConfigFilenameWithToolbelt() : void
-  {
-    $structure = [
-      'toolbelt.yml' => 'test',
-      'toolbelt.yml.dist' => 'test',
-    ];
+    public function testGetProjectLocalConfigFilenameWithToolbelt() : void
+    {
+        $structure = [
+        'toolbelt.yml' => 'test',
+        'toolbelt.yml.dist' => 'test',
+        ];
 
-    $localFileSystem = vfsStream::setup('root', null, $structure);
+        $localFileSystem = vfsStream::setup('root', null, $structure);
 
-    $configFileReader = new ConfigFileReader($localFileSystem->url());
+        $configFileReader = new ConfigFileReader($localFileSystem->url());
 
-    $this->assertEquals(
-      'toolbelt.yml',
-      $configFileReader->getProjectLocalConfigFilename()
-    );
-  }
+        $this->assertEquals(
+            'toolbelt.yml',
+            $configFileReader->getProjectLocalConfigFilename()
+        );
+    }
 
-  public function testGetProjectLocalConfigFilenameWithMultipleOnlyReturnsFirst() : void
-  {
-    $structure = [
-      'toolbelt.yml' => 'test',
-      'toolbelt.yml.dist' => 'test',
-      'robo.yml' => 'test',
-      'robo.yml.dist' => 'test',
-    ];
+    public function testGetProjectLocalConfigFilenameWithMultipleOnlyReturnsFirst() : void
+    {
+        $structure = [
+        'toolbelt.yml' => 'test',
+        'toolbelt.yml.dist' => 'test',
+        'robo.yml' => 'test',
+        'robo.yml.dist' => 'test',
+        ];
 
-    $localFileSystem = vfsStream::setup('root', null, $structure);
+        $localFileSystem = vfsStream::setup('root', null, $structure);
 
-    $configFileReader = new ConfigFileReader($localFileSystem->url());
+        $configFileReader = new ConfigFileReader($localFileSystem->url());
 
-    $this->assertEquals(
-      'robo.yml',
-      $configFileReader->getProjectLocalConfigFilename()
-    );
-  }
+        $this->assertEquals(
+            'robo.yml',
+            $configFileReader->getProjectLocalConfigFilename()
+        );
+    }
 
-  /**
-   * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException
-   */
-  public function testGetProjectLocalConfigFilenameWithNoneFailsHard() : void
-  {
-    $structure = [
-      'test.yml' => 'test',
-    ];
+    /**
+     * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException
+     */
+    public function testGetProjectLocalConfigFilenameWithNoneFailsHard() : void
+    {
+        $structure = [
+        'test.yml' => 'test',
+        ];
 
-    $localFileSystem = vfsStream::setup('root', null, $structure);
+        $localFileSystem = vfsStream::setup('root', null, $structure);
 
-    $configFileReader = new ConfigFileReader($localFileSystem->url());
-    $configFileReader->getProjectLocalConfigFilename();
-  }
+        $configFileReader = new ConfigFileReader($localFileSystem->url());
+        $configFileReader->getProjectLocalConfigFilename();
+    }
 
-  public function testGetConfigSplitFromRoboConfig() : void
-  {
-    $structure = [
-      'robo.yml' => '',
-      'robo.yml.dist' => file_get_contents('./robo.yml.dist')
-    ];
+    public function testGetConfigSplitFromRoboConfig() : void
+    {
+        $structure = [
+        'robo.yml' => '',
+        'robo.yml.dist' => file_get_contents('./robo.yml.dist')
+        ];
 
-    $localFileSystem = vfsStream::setup('root', null, $structure);
-    $configFileReader = new ConfigFileReader($localFileSystem->url());
+        $localFileSystem = vfsStream::setup('root', null, $structure);
+        $configFileReader = new ConfigFileReader($localFileSystem->url());
 
-    $wantedConfigSplitArray = [
-      'default' => [
+        $wantedConfigSplitArray = [
+        'default' => [
         'machine_name' => 'config_split.config_split.default',
         'folder' => $localFileSystem->url() . '/remote-config/default',
-      ],
-      'prod' => [
+        ],
+        'prod' => [
         'machine_name' => 'config_split.config_split.production',
         'folder' => $localFileSystem->url() . '/remote-config/prod',
-      ],
-      'dev' => [
+        ],
+        'dev' => [
         'machine_name' => 'config_split.config_split.development',
         'folder' => $localFileSystem->url() . '/remote-config/dev'
-      ],
-    ];
+        ],
+        ];
 
-    $this->assertEquals(
-      $wantedConfigSplitArray,
-      $configFileReader->getConfigSplitFromRoboConfig()
-    );
-  }
+        $this->assertEquals(
+            $wantedConfigSplitArray,
+            $configFileReader->getConfigSplitFromRoboConfig()
+        );
+    }
 }

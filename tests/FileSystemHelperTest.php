@@ -11,46 +11,46 @@ use wearewondrous\PshToolbelt\FileSystemHelper;
 final class FileSystemHelperTest extends TestCase
 {
 
-  /**
-   * @var vfsStreamDirectory
-   */
-  public $fileSystem;
+    /**
+     * @var vfsStreamDirectory
+     */
+    public $fileSystem;
 
-  public function setUp()
-  {
-    $structure = [
-      'robo.yml' => 'test',
-      'robo.yml.dist' => 'test',
-    ];
+    public function setUp()
+    {
+        $structure = [
+        'robo.yml' => 'test',
+        'robo.yml.dist' => 'test',
+        ];
 
-    $this->fileSystem = vfsStream::setup('root', null, $structure);
-  }
+        $this->fileSystem = vfsStream::setup('root', null, $structure);
+    }
 
-  public function testGetRootDir() : void
-  {
-    $fileSystemHelper = new FileSystemHelper($this->fileSystem->url());
-    $rootDir = $fileSystemHelper->getRootDir();
+    public function testGetRootDir() : void
+    {
+        $fileSystemHelper = new FileSystemHelper($this->fileSystem->url());
+        $rootDir = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
-      'vfs://root',
-      $rootDir
-    );
+        $this->assertEquals(
+            'vfs://root',
+            $rootDir
+        );
 
-    $fileSystemHelper = new FileSystemHelper('/app/tests');
-    $rootDir = $fileSystemHelper->getRootDir();
+        $fileSystemHelper = new FileSystemHelper('/app/tests');
+        $rootDir = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
-      '/app/tests',
-      $rootDir
-    );
+        $this->assertEquals(
+            '/app/tests',
+            $rootDir
+        );
 
 
-    $fileSystemHelper = new FileSystemHelper('/app/vendor/wearewondrous/psh-toolbelt/src');
-    $rootDir = $fileSystemHelper->getRootDir();
+        $fileSystemHelper = new FileSystemHelper('/app/vendor/wearewondrous/psh-toolbelt/src');
+        $rootDir = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
-      '/app/',
-      $rootDir
-    );
-  }
+        $this->assertEquals(
+            '/app/',
+            $rootDir
+        );
+    }
 }

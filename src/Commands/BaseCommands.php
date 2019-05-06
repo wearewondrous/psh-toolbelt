@@ -14,74 +14,80 @@ use wearewondrous\PshToolbelt\ConfigFileReader;
  *
  * @see http://robo.li/
  */
-abstract class BaseCommands extends Tasks {
+abstract class BaseCommands extends Tasks
+{
 
-  use loadTasks;
+    use loadTasks;
 
-  const FILE_DELIMITER = '--';
+    const FILE_DELIMITER = '--';
 
-  const DATETIME_FORMAT = 'c';
+    const DATETIME_FORMAT = 'c';
 
-  const DATE_FORMAT = 'Y-m-d';
+    const DATE_FORMAT = 'Y-m-d';
 
-  const VCS_MASTER = 'master';
+    const VCS_MASTER = 'master';
 
-  const DB_DUMP_SUFFIX = '--dump';
+    const DB_DUMP_SUFFIX = '--dump';
 
-  const FILES_DUMP_SUFFIX = '--files-%s';
+    const FILES_DUMP_SUFFIX = '--files-%s';
 
-  protected $drushAlias = '';
+    protected $drushAlias = '';
 
-  /**
-   * @var PshConfig
-   */
-  protected $pshConfig;
+    /**
+     * @var PshConfig
+     */
+    protected $pshConfig;
 
-  /**
-   * @var \wearewondrous\PshToolbelt\ConfigFileReader
-   */
-  protected $configFileReader;
+    /**
+     * @var \wearewondrous\PshToolbelt\ConfigFileReader
+     */
+    protected $configFileReader;
 
-  /**
-   * @var FileSystemHelper
-   */
-  protected $fileSystemHelper;
+    /**
+     * @var FileSystemHelper
+     */
+    protected $fileSystemHelper;
 
-  public function __construct() {
-    $this->fileSystemHelper = new FileSystemHelper();
-    $this->configFileReader = new ConfigFileReader($this->fileSystemHelper->getRootDir());
-  }
-
-  /**
-   * Command initialization.
-   *
-   * @hook init
-   */
-  public function initEnvironmentVars(): void {
-    Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
-    $this->stopOnFail();  // halt, if native cli commands fail
-    $this->drushAlias = implode('', [
-      '@',
-      Robo::Config()->get('drush.alias_group'),
-      '.',
-      Robo::Config()->get('drush.alias'),
-    ]);
-
-    $this->pshConfig = new PshConfig();
-
-    if (!$this->pshConfig->isValidPlatform()) {
-      return;
+    public function __construct()
+    {
+        $this->fileSystemHelper = new FileSystemHelper();
+        $this->configFileReader = new ConfigFileReader($this->fileSystemHelper->getRootDir());
     }
 
-    Robo::Config()->setDefault('drush.path', 'drush');
-  }
+    /**
+     * Command initialization.
+     *
+     * @hook init
+     */
+    public function initEnvironmentVars(): void
+    {
+        Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
+        $this->stopOnFail();  // halt, if native cli commands fail
+        $this->drushAlias = implode(
+            '', [
+            '@',
+            Robo::Config()->get('drush.alias_group'),
+            '.',
+            Robo::Config()->get('drush.alias'),
+            ]
+        );
 
-  /**
-   * @param string $variable
-   *
-   * @return string|null
-   */
-  protected function getEnv(string $variable): ?string {
-    return $this->pshConfig->variable($variable, getenv($variable));
-  }
+        $this->pshConfig = new PshConfig();
+
+        if (!$this->pshConfig->isValidPlatform()) {
+            return;
+        }
+
+        Robo::Config()->setDefault('drush.path', 'drush');
+    }
+
+    /**
+     * @param string $variable
+     *
+     * @return string|null
+     */
+    protected function getEnv(string $variable): ?string
+    {
+        return $this->pshConfig->variable($variable, getenv($variable));
+    }
 }

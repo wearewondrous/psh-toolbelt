@@ -42,6 +42,10 @@ class UpdateCommands extends BaseCommands
         $workspaceChanges = shell_exec("cd {$app_dir} && git status --porcelain");
         $currentBranch = shell_exec("cd {$app_dir} && git rev-parse --abbrev-ref HEAD");
 
+        if(!$currentBranch) {
+          $currentBranch = 'master';
+        }
+
         if ($workspaceChanges) {
             $overwrite = $this->ask('There are changes in your local. Stash them? [Y/n]');
 

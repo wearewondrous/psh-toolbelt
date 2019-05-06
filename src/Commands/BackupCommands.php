@@ -45,7 +45,12 @@ class BackupCommands extends BaseCommands
             die("Not an Environment with a database.");
         }
 
-        $this->validateEnvVars();
+        try {
+            $this->validateEnvVars();
+        } catch (Exception $e) {
+            die("Not all required environment variables defined" . $e);
+        }
+
         $this->projectPrefix = implode(
             '',
             [
@@ -100,7 +105,7 @@ class BackupCommands extends BaseCommands
 
         $this->sentryClient->captureMessage(
             "Successfully backed up: $prefix",
-            null,
+            [],
             [
             'level' => 'info',
             ]
@@ -187,7 +192,7 @@ class BackupCommands extends BaseCommands
         if ($removedFolders) {
             $this->sentryClient->captureMessage(
                 "Cleanup, folders removed: " . implode(', ', $removedFolders),
-                null,
+                [],
                 [
                 'level' => 'info',
                 ]
@@ -218,7 +223,11 @@ class BackupCommands extends BaseCommands
         $fileParts = explode(self::FILE_DELIMITER, $folderName);
         $datetime = array_pop($fileParts);
 
-        return strtotime($datetime);
+        if(!$datetime) {
+          return 0;
+        }
+
+        return (int) strtotime($datetime);
     }
 
     /**
@@ -261,7 +270,7 @@ class BackupCommands extends BaseCommands
             unlink($pathToFile);
             $this->sentryClient->captureMessage(
                 "DB backed up in: " . $objectKey,
-                null,
+                [],
                 [
                 'level' => 'info',
                 ]
@@ -269,7 +278,7 @@ class BackupCommands extends BaseCommands
         } catch (Exception $e) {
             $this->sentryClient->captureMessage(
                 "Database backup: " . $e->getMessage(),
-                null,
+                [],
                 [
                 'level' => 'error',
                 ]
@@ -337,7 +346,7 @@ class BackupCommands extends BaseCommands
                 unlink($targetFile);
                 $this->sentryClient->captureMessage(
                     "{$key}-files backed up in: " . $objectKey,
-                    null,
+                    [],
                     [
                     'level' => 'info',
                     ]
@@ -346,7 +355,7 @@ class BackupCommands extends BaseCommands
         } catch (Exception $e) {
             $this->sentryClient->captureMessage(
                 "Files backup: " . $e->getMessage(),
-                null,
+                [],
                 [
                 'level' => 'error',
                 ]

@@ -159,7 +159,7 @@ class SiteSettings
      */
     private function setConfigSplit(): void
     {
-        $configSplit = self::getConfigSplitArray($this->roboConfig);
+        $configSplit = $this->configFileReader->getConfigSplitFromRoboConfig();
         // activate development split.
         $this->config[$configSplit['prod']['machine_name']]['status'] = false;
         $this->config[$configSplit['dev']['machine_name']]['status'] = true;

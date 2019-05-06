@@ -47,9 +47,9 @@ abstract class BaseCommands extends Tasks {
    */
   protected $fileSystemHelper;
 
-  public function __construct(string $rootDirectory = null) {
-    $this->configFileReader = new ConfigFileReader($rootDirectory);
-    $this->fileSystemHelper = new FileSystemHelper($rootDirectory);
+  public function __construct() {
+    $this->fileSystemHelper = new FileSystemHelper();
+    $this->configFileReader = new ConfigFileReader($this->fileSystemHelper->getRootDir());
   }
 
   /**
@@ -67,7 +67,7 @@ abstract class BaseCommands extends Tasks {
       Robo::Config()->get('drush.alias'),
     ]);
 
-    $this->pshConfig = new Config();
+    $this->pshConfig = new PshConfig();
 
     if (!$this->pshConfig->isValidPlatform()) {
       return;

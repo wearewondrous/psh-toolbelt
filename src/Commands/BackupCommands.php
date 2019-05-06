@@ -234,6 +234,8 @@ class BackupCommands extends BaseCommands {
 
   /**
    * Upload public and private files.
+   *
+   * @param string $prefix
    */
   private function archiveAndUploadFiles(string $prefix): void {
     $paths = [

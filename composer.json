@@ -17,6 +17,11 @@
             "wearewondrous\\PshToolbelt\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "wearewondrous\\PshToolbelt\\Tests\\": "tests/"
+        }
+    },
     "config": {
         "process-timeout": 1200,
         "prefered-install": "dist",
@@ -57,7 +62,8 @@
         "source": "https://github.com/wearewondrous/psh-toolbelt.git"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.5.9",
-        "mikey179/vfsStream": "^1.6.6"
+        "mikey179/vfsStream": "^1.6.6",
+        "phpstan/phpstan": "^0.11.0@dev",
+        "phpunit/phpunit": "^7.5.9"
     }
 }

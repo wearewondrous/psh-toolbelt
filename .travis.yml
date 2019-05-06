@@ -13,6 +13,7 @@ install:
 
 script:
   - ./vendor/bin/phpunit --bootstrap vendor/autoload.php tests
+  - ./vendor/bin/phpstan analyse -l 7 tests # Only tests folder for now. As src folder will break
 
 cache:
   directories:

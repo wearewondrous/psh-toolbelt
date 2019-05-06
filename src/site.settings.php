@@ -1,13 +1,4 @@
 <?php
-/**
- * This file is included by the Drupal sites
- *
- * @file     site.settings.php
- * @category Wondrous
- * @package  PshToolbelt
- * @author   Wondrous LTD <admin@wearewondrous.com>
- * @link     https://github.com/wearewondrous/psh-toolbelt
- */
 
 use Platformsh\ConfigReader\Config;
 use wearewondrous\PshToolbelt\ConfigFileReader;

@@ -12,23 +12,6 @@
         "drupal-8",
         "drupal_vm"
     ],
-    "repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "drupal/coder",
-                "version": "master",
-                "dist": {
-                    "type": "zip",
-                    "url": "https://ftp.drupal.org/files/projects/coder-8.x-3.3.zip",
-                    "reference": "master"
-                },
-                "autoload": {
-                    "classmap": ["."]
-                }
-            }
-        }
-    ],
     "autoload": {
         "psr-4": {
             "wearewondrous\\PshToolbelt\\": "src/"
@@ -64,7 +47,7 @@
         "vlucas/phpdotenv": "~3.3"
     },
     "scripts": {
-        "post-install-cmd": " ./vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer",
+        "post-install-cmd": " ./vendor/bin/phpcs --config-set default_standard PSR12",
         "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php tests",
         "analyse": "./vendor/bin/phpstan analyse -l 7 tests",
         "codestyle": "./vendor/bin/phpcs tests src",
@@ -90,7 +73,6 @@
         "mikey179/vfsStream": "^1.6.6",
         "phpstan/phpstan": "^0.11.0",
         "phpunit/phpunit": "^7.5.9",
-        "squizlabs/php_codesniffer": "~3.0",
-        "drupal/coder": "dev-master"
+        "squizlabs/php_codesniffer": "~3.0"
     }
 }

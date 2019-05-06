@@ -27,7 +27,8 @@ class UpdateCommands extends BaseCommands
     'db|d' => false,
     'files|f' => false,
     ]
-    ): void {
+    ): void
+    {
         if ($this->pshConfig->isValidPlatform()) {
             die("Sorry, only works in local Environment.");
         }
@@ -98,11 +99,13 @@ class UpdateCommands extends BaseCommands
         $configSyncDir = Robo::config()->get('drupal.config_sync_directory');
         $devDir = Robo::config()->get('drupal.config.splits.dev.folder') . '/';
         $remoteConfigFolder = Robo::config()->get('platform.mounts.config');
+        // phpcs:ignore
         $this->_exec("platform mount:download -e {$branch} -m {$remoteConfigFolder} --target {$app_dir}{$configSyncDir} --delete --exclude={$devDir} --exclude=.htaccess -y -q");
 
         $this->yell("Pull DB from remote", 50, 'default');
         $dbFileName = implode(
-            '', [
+            '',
+            [
             Robo::Config()->get('drush.alias_group') . self::FILE_DELIMITER,
             $branch . self::FILE_DELIMITER,
             date(self::DATE_FORMAT),
@@ -143,11 +146,13 @@ class UpdateCommands extends BaseCommands
         $privateFilesDir = Robo::Config()->get('drupal.private_files_directory');
 
         $excludes = '--exclude=' . implode(
-            ' --exclude=', Robo::Config()
+            ' --exclude=',
+            Robo::Config()
             ->get('drupal.excludes')
         );
         $options = implode(
-            ' ', [
+            ' ',
+            [
             "-e {$branch}",
             '--delete',
             $excludes,

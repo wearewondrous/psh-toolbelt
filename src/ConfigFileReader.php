@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace wearewondrous\PshToolbelt;
@@ -7,6 +8,9 @@ use Robo\Config\Config as RoboConfig;
 use Robo\Robo;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
+/**
+ * Class ConfigFileReader
+ */
 class ConfigFileReader
 {
 
@@ -68,7 +72,8 @@ class ConfigFileReader
         return array_map(
             function ($acceptableFilename) {
                 return $acceptableFilename . '.yml';
-            }, $acceptableFilenames
+            },
+            $acceptableFilenames
         );
     }
 
@@ -78,12 +83,13 @@ class ConfigFileReader
     public function getProjectLocalConfigFilename() : string
     {
         $realProjectConfigFiles = array_filter(
-            $this->getAcceptableProjectLocalConfigFilenames(), function ($acceptableProjectLocalConfigFilename) {
-                return file_exists($this->fileSystemHelper->getRootDir() . '/' .$acceptableProjectLocalConfigFilename);
+            $this->getAcceptableProjectLocalConfigFilenames(),
+            function ($acceptableProjectLocalConfigFilename) {
+                return file_exists($this->fileSystemHelper->getRootDir() . '/' . $acceptableProjectLocalConfigFilename);
             }
         );
 
-        if(!$realProjectConfigFiles) {
+        if (!$realProjectConfigFiles) {
             throw new FileNotFoundException('No valid configuration files found');
         }
 
@@ -108,13 +114,15 @@ class ConfigFileReader
         return [
         'default' => [
         'machine_name' => implode(
-            '.', [
+            '.',
+            [
             'config_split.config_split',
             $this->roboConfig->get('drupal.config.splits.default.machine_name'),
             ]
         ),
         'folder' => implode(
-            '/', [
+            '/',
+            [
             $this->fileSystemHelper->getRootDir(),
             $this->roboConfig->get('platform.mounts.config'),
             $this->roboConfig->get('drupal.config.splits.default.folder'),
@@ -123,13 +131,15 @@ class ConfigFileReader
         ],
         'prod' => [
         'machine_name' => implode(
-            '.', [
+            '.',
+            [
             'config_split.config_split',
             $this->roboConfig->get('drupal.config.splits.prod.machine_name'),
             ]
         ),
         'folder' => implode(
-            '/', [
+            '/',
+            [
             $this->fileSystemHelper->getRootDir(),
             $this->roboConfig->get('platform.mounts.config'),
             $this->roboConfig->get('drupal.config.splits.prod.folder'),
@@ -138,13 +148,15 @@ class ConfigFileReader
         ],
         'dev' => [
         'machine_name' => implode(
-            '.', [
+            '.',
+            [
             'config_split.config_split',
             $this->roboConfig->get('drupal.config.splits.dev.machine_name'),
             ]
         ),
         'folder' => implode(
-            '/', [
+            '/',
+            [
             $this->fileSystemHelper->getRootDir(),
             $this->roboConfig->get('platform.mounts.config'),
             $this->roboConfig->get('drupal.config.splits.dev.folder'),

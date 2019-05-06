@@ -1,8 +1,4 @@
 <?php
-/**
- * @file
- * Platform.sh settings.
- */
 
 $platformsh = new \Platformsh\ConfigReader\Config();
 
@@ -117,10 +113,10 @@ foreach ($platformsh->variables() as $name => $value) {
     // to the $settings array verbatim, even if the value is an array.
     // For example, a variable named d8settings:example-setting' with
     // value 'foo' becomes $settings['example-setting'] = 'foo';
-    case 'd8settings':
-    case 'drupal':
-        $settings[$key] = $value;
-        break;
+        case 'd8settings':
+        case 'drupal':
+            $settings[$key] = $value;
+            break;
     // Variables that begin with `d8config` get mapped to the $config
     // array.  Deeply nested variable names, with colon delimiters,
     // get mapped to deeply nested array elements. Array values
@@ -133,16 +129,16 @@ foreach ($platformsh->variables() as $name => $value) {
     // Example: Variable `d8config:conf_file:prop:subprop` with value ['foo' => 'bar'] becomes
     // $config['conf_file']['prop']['subprop']['foo'] = 'bar';
     // Example: Variable `d8config:prop` is ignored.
-    case 'd8config':
-        if (count($parts) > 2) {
-            $temp = &$config[$key];
-            foreach (array_slice($parts, 2) as $n) {
-                $prev = &$temp;
-                $temp = &$temp[$n];
+        case 'd8config':
+            if (count($parts) > 2) {
+                $temp = &$config[$key];
+                foreach (array_slice($parts, 2) as $n) {
+                    $prev = &$temp;
+                    $temp = &$temp[$n];
+                }
+                $prev[$n] = $value;
             }
-            $prev[$n] = $value;
-        }
-        break;
+            break;
     }
 }
 

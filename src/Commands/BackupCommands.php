@@ -47,7 +47,8 @@ class BackupCommands extends BaseCommands
 
         $this->validateEnvVars();
         $this->projectPrefix = implode(
-            '', [
+            '',
+            [
             Robo::Config()->get('drush.alias_group') . '-',
             $this->pshConfig->project . self::FILE_DELIMITER,
             ]
@@ -77,14 +78,16 @@ class BackupCommands extends BaseCommands
     public function backupBranch($opt = [
     'force|f' => false,
     ]
-    ): void {
+    ): void
+    {
 
         if (!$this->backupCurrentBranch($opt['force'])) {
             return;
         }
 
         $prefix = implode(
-            '', [
+            '',
+            [
             $this->projectPrefix,
             $this->pshConfig->branch . self::FILE_DELIMITER,
             date(self::DATETIME_FORMAT),
@@ -96,7 +99,9 @@ class BackupCommands extends BaseCommands
         $this->cleanupRemote();
 
         $this->sentryClient->captureMessage(
-            "Successfully backed up: $prefix", null, [
+            "Successfully backed up: $prefix",
+            null,
+            [
             'level' => 'info',
             ]
         );
@@ -145,7 +150,8 @@ class BackupCommands extends BaseCommands
     private function cleanupRemote(): void
     {
         $dir = "s3://" . implode(
-            '/', [
+            '/',
+            [
             Robo::Config()->get('storage.s3.upload_bucket'),
             Robo::Config()->get('drush.alias_group'),
             ]
@@ -180,7 +186,9 @@ class BackupCommands extends BaseCommands
 
         if ($removedFolders) {
             $this->sentryClient->captureMessage(
-                "Cleanup, folders removed: " . implode(', ', $removedFolders), null, [
+                "Cleanup, folders removed: " . implode(', ', $removedFolders),
+                null,
+                [
                 'level' => 'info',
                 ]
             );
@@ -222,14 +230,16 @@ class BackupCommands extends BaseCommands
     {
         $fileName = $prefix . self::DB_DUMP_SUFFIX . '.sql.gz';
         $pathToFile = implode(
-            '/', [
+            '/',
+            [
             $this->pshConfig->appDir,
             trim(Robo::Config()->get('platform.mounts.temp'), '/'),
             $fileName,
             ]
         );
         $objectKey = implode(
-            '/', [
+            '/',
+            [
             Robo::Config()->get('drush.alias_group'),
             $prefix,
             $fileName,
@@ -250,13 +260,17 @@ class BackupCommands extends BaseCommands
 
             unlink($pathToFile);
             $this->sentryClient->captureMessage(
-                "DB backed up in: " . $objectKey, null, [
+                "DB backed up in: " . $objectKey,
+                null,
+                [
                 'level' => 'info',
                 ]
             );
         } catch (Exception $e) {
             $this->sentryClient->captureMessage(
-                "Database backup: " . $e->getMessage(), null, [
+                "Database backup: " . $e->getMessage(),
+                null,
+                [
                 'level' => 'error',
                 ]
             );
@@ -276,7 +290,8 @@ class BackupCommands extends BaseCommands
         ];
         $targetFileTemplate = $prefix . self::FILES_DUMP_SUFFIX . '.tar.gz';
         $objectKeyTemplate = implode(
-            '/', [
+            '/',
+            [
             Robo::Config()->get('drush.alias_group'),
             $prefix,
             $targetFileTemplate,
@@ -287,21 +302,24 @@ class BackupCommands extends BaseCommands
             foreach ($paths as $key => $path) {
                 $objectKey = sprintf($objectKeyTemplate, $key);
                 $targetFile = implode(
-                    '/', [
+                    '/',
+                    [
                     $this->pshConfig->appDir,
                     trim(Robo::Config()->get('platform.mounts.temp'), '/'),
                     sprintf($targetFileTemplate, $key),
                     ]
                 );
                 $directory = implode(
-                    '/', [
+                    '/',
+                    [
                     // no app dir, for the export will work with relative paths
                     trim($path, '/'),
                     '', // have a trailing slash
                     ]
                 );
                 $excludes = '--exclude=' . implode(
-                    ' --exclude=', Robo::Config()
+                    ' --exclude=',
+                    Robo::Config()
                     ->get('drupal.excludes')
                 );
                 // Tar: excludes first, create tar.
@@ -318,14 +336,18 @@ class BackupCommands extends BaseCommands
 
                 unlink($targetFile);
                 $this->sentryClient->captureMessage(
-                    "{$key}-files backed up in: " . $objectKey, null, [
+                    "{$key}-files backed up in: " . $objectKey,
+                    null,
+                    [
                     'level' => 'info',
                     ]
                 );
             }
         } catch (Exception $e) {
             $this->sentryClient->captureMessage(
-                "Files backup: " . $e->getMessage(), null, [
+                "Files backup: " . $e->getMessage(),
+                null,
+                [
                 'level' => 'error',
                 ]
             );

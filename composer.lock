@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3cbd9b125c7937aeddfa30be4576fc6b",
+    "content-hash": "fcc07aa2b4b9747298d2ae42cf853a48",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2782,22 +2782,6 @@
             "time": "2019-03-17T17:37:11+00:00"
         },
         {
-            "name": "drupal/coder",
-            "version": "master",
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/coder-8.x-3.3.zip",
-                "reference": "master",
-                "shasum": null
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "."
-                ]
-            }
-        },
-        {
             "name": "jean85/pretty-package-versions",
             "version": "1.2",
             "source": {
@@ -5050,9 +5034,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "drupal/coder": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

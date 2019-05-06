@@ -1,7 +1,4 @@
 <?php
-/**
- * @file SiteSettings
- */
 
 namespace wearewondrous\PshToolbelt;
 
@@ -87,7 +84,8 @@ class SiteSettings
         $this->settings['trusted_host_patterns'] = [];
         $this->settings['update_free_access'] = false;
         $this->config_directories[CONFIG_SYNC_DIRECTORY] = implode(
-            '/', [
+            '/',
+            [
             '..',
             $this->roboConfig->get('drupal.config_sync_directory'),
             $this->roboConfig->get('drupal.config.splits.default.folder'),

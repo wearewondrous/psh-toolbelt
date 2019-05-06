@@ -64,7 +64,8 @@ abstract class BaseCommands extends Tasks
         Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
         $this->stopOnFail();  // halt, if native cli commands fail
         $this->drushAlias = implode(
-            '', [
+            '',
+            [
             '@',
             Robo::Config()->get('drush.alias_group'),
             '.',

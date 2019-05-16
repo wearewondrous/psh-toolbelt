@@ -1,40 +1,29 @@
 <?php
+
 declare(strict_types=1);
 
 namespace wearewondrous\PshToolbelt;
 
+use function str_replace;
+
 final class FileSystemHelper
 {
+    public const SRC_PATH = 'vendor/wearewondrous/psh-toolbelt/src';
 
-    const SRC_PATH = 'vendor/wearewondrous/psh-toolbelt/src';
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $rootDir;
 
-    /**
-     * FileSystemHelper constructor.
-     *
-     * @param string|NULL $rootDirectory
-     */
-    public function __construct(string $rootDirectory = null)
+    public function __construct(?string $rootDirectory = null)
     {
         $this->setRootDir($rootDirectory);
     }
 
-    /**
-     * @return string
-     */
-    public function getRootDir(): string
+    public function getRootDir() : string
     {
         return $this->rootDir;
     }
 
-    /**
-     * @param string|NULL $rootDirectory
-     */
-    private function setRootDir(string $rootDirectory = null) : void
+    private function setRootDir(?string $rootDirectory = null) : void
     {
         $directoryToUse = $rootDirectory ?? __DIR__;
 

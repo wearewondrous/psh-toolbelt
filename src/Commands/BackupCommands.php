@@ -1,11 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace wearewondrous\PshToolbelt\Commands;
 
 use Aws\S3\S3Client;
 use Exception;
 use Raven_Client;
 use Robo\Robo;
+use Throwable;
+use function array_pop;
+use function closedir;
+use function date;
+use function explode;
+use function fopen;
+use function implode;
+use function is_dir;
+use function opendir;
+use function readdir;
+use function sprintf;
+use function strpos;
+use function strtotime;
+use function time;
+use function trim;
+use function unlink;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -14,20 +32,13 @@ use Robo\Robo;
  */
 class BackupCommands extends BaseCommands
 {
-
-    /**
-     * @var Raven_Client
-     */
+    /** @var Raven_Client */
     private $sentryClient;
 
-    /**
-     * @var \Aws\S3\S3Client
-     */
+    /** @var S3Client */
     private $s3Client;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $projectPrefix;
 
     /**
@@ -35,38 +46,38 @@ class BackupCommands extends BaseCommands
      *
      * @hook post-init
      */
-    public function initVars(): void
+    public function initVars() : void
     {
-        if (!$this->pshConfig->isValidPlatform()) {
-            die("Not in a Platform.sh Environment.");
+        if (! $this->pshConfig->isValidPlatform()) {
+            die('Not in a Platform.sh Environment.');
         }
 
-        if (!$this->pshConfig->hasRelationship('database')) {
-            die("Not an Environment with a database.");
+        if (! $this->pshConfig->hasRelationship('database')) {
+            die('Not an Environment with a database.');
         }
 
         try {
             $this->validateEnvVars();
-        } catch (Exception $e) {
-            die("Not all required environment variables defined" . $e);
+        } catch (Throwable $e) {
+            die('Not all required environment variables defined' . $e);
         }
 
         $this->projectPrefix = implode(
             '',
             [
-            Robo::Config()->get('drush.alias_group') . '-',
-            $this->pshConfig->project . self::FILE_DELIMITER,
+                Robo::Config()->get('drush.alias_group') . '-',
+                $this->pshConfig->project . self::FILE_DELIMITER,
             ]
         );
-        $this->sentryClient = new Raven_Client($this->getEnv('SENTRY_DSN'));
-        $this->s3Client = new S3Client(
+        $this->sentryClient  = new Raven_Client($this->getEnv('SENTRY_DSN'));
+        $this->s3Client      = new S3Client(
             [
-            'version' => Robo::Config()->get('storage.s3.version'),
-            'region' => Robo::Config()->get('storage.s3.region'),
-            'credentials' => [
-            'key' => $this->getEnv('AWS_ACCESS_KEY_ID'),
-            'secret' => $this->getEnv('AWS_SECRET_KEY_ID'),
-            ],
+                'version' => Robo::Config()->get('storage.s3.version'),
+                'region' => Robo::Config()->get('storage.s3.region'),
+                'credentials' => [
+                    'key' => $this->getEnv('AWS_ACCESS_KEY_ID'),
+                    'secret' => $this->getEnv('AWS_SECRET_KEY_ID'),
+                ],
             ]
         );
         $this->s3Client->registerStreamWrapper();
@@ -75,27 +86,25 @@ class BackupCommands extends BaseCommands
     /**
      * Backup current branch to AWS, including files and db
      *
-     * @param  array $opt
-     * @option $force Ignore config and force uploading the current environment
+     * @param  mixed[] $opt
      *
-     * @throws \Exception
+     * @throws Exception
+     *
+     * @option $force Ignore config and force uploading the current environment
      */
-    public function backupBranch($opt = [
-    'force|f' => false,
-    ]
-    ): void
+    public function backupBranch(array $opt = ['force|f' => false]
+    ) : void
     {
-
-        if (!$this->backupCurrentBranch($opt['force'])) {
+        if (! $this->backupCurrentBranch($opt['force'])) {
             return;
         }
 
         $prefix = implode(
             '',
             [
-            $this->projectPrefix,
-            $this->pshConfig->branch . self::FILE_DELIMITER,
-            date(self::DATETIME_FORMAT),
+                $this->projectPrefix,
+                $this->pshConfig->branch . self::FILE_DELIMITER,
+                date(self::DATETIME_FORMAT),
             ]
         );
 
@@ -104,38 +113,31 @@ class BackupCommands extends BaseCommands
         $this->cleanupRemote();
 
         $this->sentryClient->captureMessage(
-            "Successfully backed up: $prefix",
+            sprintf('Successfully backed up: %s', $prefix),
             [],
-            [
-            'level' => 'info',
-            ]
+            ['level' => 'info']
         );
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
-    private function validateEnvVars(): void
+    private function validateEnvVars() : void
     {
         $variables = [
-        'AWS_ACCESS_KEY_ID',
-        'AWS_SECRET_KEY_ID',
-        'SENTRY_DSN',
+            'AWS_ACCESS_KEY_ID',
+            'AWS_SECRET_KEY_ID',
+            'SENTRY_DSN',
         ];
 
         foreach ($variables as $variable) {
-            if (!$this->getEnv($variable)) {
+            if (! $this->getEnv($variable)) {
                 throw new Exception(sprintf('Environment variable %s missing', $variable));
             }
         }
     }
 
-    /**
-     * @param bool $forced
-     *
-     * @return bool
-     */
-    private function backupCurrentBranch(bool $forced): bool
+    private function backupCurrentBranch(bool $forced) : bool
     {
         if ($forced) {
             return true;
@@ -152,23 +154,23 @@ class BackupCommands extends BaseCommands
      * Remove remote backup files that are older than storage.backup.max_age
      * (defaults to 5 days).
      */
-    private function cleanupRemote(): void
+    private function cleanupRemote() : void
     {
-        $dir = "s3://" . implode(
+        $dir = 's3://' . implode(
             '/',
             [
-            Robo::Config()->get('storage.s3.upload_bucket'),
-            Robo::Config()->get('drush.alias_group'),
+                Robo::Config()->get('storage.s3.upload_bucket'),
+                Robo::Config()->get('drush.alias_group'),
             ]
         );
 
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return;
         }
 
         $dir_handle = opendir($dir);
 
-        if (!$dir_handle) {
+        if (! $dir_handle) {
             return;
         }
 
@@ -181,31 +183,28 @@ class BackupCommands extends BaseCommands
 
             $dirPath = $dir . '/' . $file;
 
-            if (is_dir($dirPath) && $this->isBackupOutdated($dirPath)) {
-                $removedFolders[] = $dirPath;
-                unlink($dirPath);
+            if (! is_dir($dirPath) || ! $this->isBackupOutdated($dirPath)) {
+                continue;
             }
+
+            $removedFolders[] = $dirPath;
+            unlink($dirPath);
         }
 
         closedir($dir_handle);
 
-        if ($removedFolders) {
-            $this->sentryClient->captureMessage(
-                "Cleanup, folders removed: " . implode(', ', $removedFolders),
-                [],
-                [
-                'level' => 'info',
-                ]
-            );
+        if (! $removedFolders) {
+            return;
         }
+
+        $this->sentryClient->captureMessage(
+            'Cleanup, folders removed: ' . implode(', ', $removedFolders),
+            [],
+            ['level' => 'info']
+        );
     }
 
-    /**
-     * @param string $dirPath
-     *
-     * @return bool
-     */
-    private function isBackupOutdated(string $dirPath): bool
+    private function isBackupOutdated(string $dirPath) : bool
     {
         $lastModified = $this->getLastModifiedFromFolder($dirPath);
 
@@ -213,17 +212,12 @@ class BackupCommands extends BaseCommands
         ->get('storage.backup.max_age');
     }
 
-    /**
-     * @param string $folderName
-     *
-     * @return int
-     */
-    private function getLastModifiedFromFolder(string $folderName): int
+    private function getLastModifiedFromFolder(string $folderName) : int
     {
         $fileParts = explode(self::FILE_DELIMITER, $folderName);
-        $datetime = array_pop($fileParts);
+        $datetime  = array_pop($fileParts);
 
-        if (!$datetime) {
+        if (! $datetime) {
             return 0;
         }
 
@@ -232,133 +226,121 @@ class BackupCommands extends BaseCommands
 
     /**
      * Upload the database.
-     *
-     * @param string $prefix
      */
-    private function dbDumpAndUpload(string $prefix): void
+    private function dbDumpAndUpload(string $prefix) : void
     {
-        $fileName = $prefix . self::DB_DUMP_SUFFIX . '.sql.gz';
+        $fileName   = $prefix . self::DB_DUMP_SUFFIX . '.sql.gz';
         $pathToFile = implode(
             '/',
             [
-            $this->pshConfig->appDir,
-            trim(Robo::Config()->get('platform.mounts.temp'), '/'),
-            $fileName,
+                $this->pshConfig->appDir,
+                trim(Robo::Config()->get('platform.mounts.temp'), '/'),
+                $fileName,
             ]
         );
-        $objectKey = implode(
+        $objectKey  = implode(
             '/',
             [
-            Robo::Config()->get('drush.alias_group'),
-            $prefix,
-            $fileName,
+                Robo::Config()->get('drush.alias_group'),
+                $prefix,
+                $fileName,
             ]
         );
 
         try {
             $drushPath = Robo::Config()->get('drush.path');
-            $this->_exec("{$drushPath} sql:dump | gzip > {$pathToFile}");
+            $this->_exec(sprintf('%s sql:dump | gzip > %s', $drushPath, $pathToFile));
 
             $this->s3Client->putObject(
                 [
-                'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
-                'Key' => $objectKey,
-                'Body' => fopen($pathToFile, 'r'),
+                    'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
+                    'Key' => $objectKey,
+                    'Body' => fopen($pathToFile, 'r'),
                 ]
             );
 
             unlink($pathToFile);
             $this->sentryClient->captureMessage(
-                "DB backed up in: " . $objectKey,
+                'DB backed up in: ' . $objectKey,
                 [],
-                [
-                'level' => 'info',
-                ]
+                ['level' => 'info']
             );
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->sentryClient->captureMessage(
-                "Database backup: " . $e->getMessage(),
+                'Database backup: ' . $e->getMessage(),
                 [],
-                [
-                'level' => 'error',
-                ]
+                ['level' => 'error']
             );
         }
     }
 
     /**
      * Upload public and private files.
-     *
-     * @param string $prefix
      */
-    private function archiveAndUploadFiles(string $prefix): void
+    private function archiveAndUploadFiles(string $prefix) : void
     {
-        $paths = [
-        'public' => Robo::Config()->get('drupal.public_files_directory') . '/',
-        'private' => Robo::Config()->get('drupal.private_files_directory') . '/',
+        $paths              = [
+            'public' => Robo::Config()->get('drupal.public_files_directory') . '/',
+            'private' => Robo::Config()->get('drupal.private_files_directory') . '/',
         ];
         $targetFileTemplate = $prefix . self::FILES_DUMP_SUFFIX . '.tar.gz';
-        $objectKeyTemplate = implode(
+        $objectKeyTemplate  = implode(
             '/',
             [
-            Robo::Config()->get('drush.alias_group'),
-            $prefix,
-            $targetFileTemplate,
+                Robo::Config()->get('drush.alias_group'),
+                $prefix,
+                $targetFileTemplate,
             ]
         );
 
         try {
             foreach ($paths as $key => $path) {
-                $objectKey = sprintf($objectKeyTemplate, $key);
+                $objectKey  = sprintf($objectKeyTemplate, $key);
                 $targetFile = implode(
                     '/',
                     [
-                    $this->pshConfig->appDir,
-                    trim(Robo::Config()->get('platform.mounts.temp'), '/'),
-                    sprintf($targetFileTemplate, $key),
+                        $this->pshConfig->appDir,
+                        trim(Robo::Config()->get('platform.mounts.temp'), '/'),
+                        sprintf($targetFileTemplate, $key),
                     ]
                 );
-                $directory = implode(
+                $directory  = implode(
                     '/',
                     [
                     // no app dir, for the export will work with relative paths
-                    trim($path, '/'),
-                    '', // have a trailing slash
+                        trim($path, '/'),
+                        '', // have a trailing slash
                     ]
                 );
-                $excludes = '--exclude=' . implode(
+                $excludes   = '--exclude=' . implode(
                     ' --exclude=',
                     Robo::Config()
                     ->get('drupal.excludes')
                 );
                 // Tar: excludes first, create tar.
                 // Pipe to gzip, otherwise error on platform.sh: "tar: z: Cannot open: Read-only file system"
-                $this->_exec("tar {$excludes} -c {$directory} | gzip > {$targetFile}");
+                $this->_exec(sprintf('tar %s -c %s | gzip > %s', $excludes, $directory, $targetFile));
 
                 $this->s3Client->putObject(
                     [
-                    'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
-                    'Key' => $objectKey,
-                    'Body' => fopen($targetFile, 'r'),
+                        'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
+                        'Key' => $objectKey,
+                        'Body' => fopen($targetFile, 'r'),
                     ]
                 );
 
                 unlink($targetFile);
                 $this->sentryClient->captureMessage(
-                    "{$key}-files backed up in: " . $objectKey,
+                    sprintf('%s-files backed up in: ', $key) . $objectKey,
                     [],
-                    [
-                    'level' => 'info',
-                    ]
+                    ['level' => 'info']
                 );
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->sentryClient->captureMessage(
-                "Files backup: " . $e->getMessage(),
+                'Files backup: ' . $e->getMessage(),
                 [],
-                [
-                'level' => 'error',
-                ]
+                ['level' => 'error']
             );
         }
     }

@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace wearewondrous\PshToolbelt\Commands;
 
 use Boedah\Robo\Task\Drush\loadTasks;
-use wearewondrous\PshToolbelt\FileSystemHelper;
 use Platformsh\ConfigReader\Config as PshConfig;
 use Robo\Robo;
 use Robo\Tasks;
 use wearewondrous\PshToolbelt\ConfigFileReader;
+use wearewondrous\PshToolbelt\FileSystemHelper;
+use function getenv;
+use function implode;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -16,36 +20,30 @@ use wearewondrous\PshToolbelt\ConfigFileReader;
  */
 abstract class BaseCommands extends Tasks
 {
-
     use loadTasks;
 
-    const FILE_DELIMITER = '--';
+    public const FILE_DELIMITER = '--';
 
-    const DATETIME_FORMAT = 'c';
+    public const DATETIME_FORMAT = 'c';
 
-    const DATE_FORMAT = 'Y-m-d';
+    public const DATE_FORMAT = 'Y-m-d';
 
-    const VCS_MASTER = 'master';
+    public const VCS_MASTER = 'master';
 
-    const DB_DUMP_SUFFIX = '--dump';
+    public const DB_DUMP_SUFFIX = '--dump';
 
-    const FILES_DUMP_SUFFIX = '--files-%s';
+    public const FILES_DUMP_SUFFIX = '--files-%s';
 
+    /** @var string */
     protected $drushAlias = '';
 
-    /**
-     * @var PshConfig
-     */
+    /** @var PshConfig */
     protected $pshConfig;
 
-    /**
-     * @var \wearewondrous\PshToolbelt\ConfigFileReader
-     */
+    /** @var ConfigFileReader */
     protected $configFileReader;
 
-    /**
-     * @var FileSystemHelper
-     */
+    /** @var FileSystemHelper */
     protected $fileSystemHelper;
 
     public function __construct()
@@ -59,35 +57,30 @@ abstract class BaseCommands extends Tasks
      *
      * @hook init
      */
-    public function initEnvironmentVars(): void
+    public function initEnvironmentVars() : void
     {
         Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
         $this->stopOnFail();  // halt, if native cli commands fail
         $this->drushAlias = implode(
             '',
             [
-            '@',
-            Robo::Config()->get('drush.alias_group'),
-            '.',
-            Robo::Config()->get('drush.alias'),
+                '@',
+                Robo::Config()->get('drush.alias_group'),
+                '.',
+                Robo::Config()->get('drush.alias'),
             ]
         );
 
         $this->pshConfig = new PshConfig();
 
-        if (!$this->pshConfig->isValidPlatform()) {
+        if (! $this->pshConfig->isValidPlatform()) {
             return;
         }
 
         Robo::Config()->setDefault('drush.path', 'drush');
     }
 
-    /**
-     * @param string $variable
-     *
-     * @return string|null
-     */
-    protected function getEnv(string $variable): ?string
+    protected function getEnv(string $variable) : ?string
     {
         return $this->pshConfig->variable($variable, getenv($variable));
     }

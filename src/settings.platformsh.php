@@ -1,29 +1,33 @@
 <?php
 
-$platformsh = new \Platformsh\ConfigReader\Config();
+declare(strict_types=1);
 
-if (!$platformsh->inRuntime()) {
+use Platformsh\ConfigReader\Config;
+
+$platformsh = new Config();
+
+if (! $platformsh->inRuntime()) {
     return;
 }
 
 // Configure the database.
-$creds = $platformsh->credentials('database');
+$creds                           = $platformsh->credentials('database');
 $databases['default']['default'] = [
-  'driver' => $creds['scheme'],
-  'database' => $creds['path'],
-  'username' => $creds['username'],
-  'password' => $creds['password'],
-  'host' => $creds['host'],
-  'port' => $creds['port'],
-  'pdo' => [PDO::MYSQL_ATTR_COMPRESS => !empty($creds['query']['compression'])]
+    'driver' => $creds['scheme'],
+    'database' => $creds['path'],
+    'username' => $creds['username'],
+    'password' => $creds['password'],
+    'host' => $creds['host'],
+    'port' => $creds['port'],
+    'pdo' => [PDO::MYSQL_ATTR_COMPRESS => ! empty($creds['query']['compression'])],
 ];
 
 // Enable Redis caching.
-if ($platformsh->hasRelationship('redis') && !drupal_installation_attempted() && extension_loaded('redis')) {
+if ($platformsh->hasRelationship('redis') && ! drupal_installation_attempted() && extension_loaded('redis')) {
     $redis = $platformsh->credentials('redis');
 
     // Set Redis as the default backend for any cache bin not otherwise specified.
-    $settings['cache']['default'] = 'cache.backend.redis';
+    $settings['cache']['default']         = 'cache.backend.redis';
     $settings['redis.connection']['host'] = $redis['host'];
     $settings['redis.connection']['port'] = $redis['port'];
 
@@ -47,58 +51,56 @@ if ($platformsh->hasRelationship('redis') && !drupal_installation_attempted() &&
     // yet. These lines force the container cache to use Redis rather than the
     // default SQL cache.
     $settings['bootstrap_container_definition'] = [
-    'parameters' => [],
-    'services' => [
-      'redis.factory' => [
-        'class' => 'Drupal\redis\ClientFactory',
-      ],
-      'cache.backend.redis' => [
-        'class' => 'Drupal\redis\Cache\CacheBackendFactory',
-        'arguments' => ['@redis.factory', '@cache_tags_provider.container', '@serialization.phpserialize'],
-      ],
-      'cache.container' => [
-        'class' => '\Drupal\redis\Cache\PhpRedis',
-        'factory' => ['@cache.backend.redis', 'get'],
-        'arguments' => ['container'],
-      ],
-      'cache_tags_provider.container' => [
-        'class' => 'Drupal\redis\Cache\RedisCacheTagsChecksum',
-        'arguments' => ['@redis.factory'],
-      ],
-      'serialization.phpserialize' => [
-        'class' => 'Drupal\Component\Serialization\PhpSerialize',
-      ],
-    ],
+        'parameters' => [],
+        'services' => [
+            'redis.factory' => ['class' => 'Drupal\redis\ClientFactory'],
+            'cache.backend.redis' => [
+                'class' => 'Drupal\redis\Cache\CacheBackendFactory',
+                'arguments' => ['@redis.factory', '@cache_tags_provider.container', '@serialization.phpserialize'],
+            ],
+            'cache.container' => [
+                'class' => '\Drupal\redis\Cache\PhpRedis',
+                'factory' => ['@cache.backend.redis', 'get'],
+                'arguments' => ['container'],
+            ],
+            'cache_tags_provider.container' => [
+                'class' => 'Drupal\redis\Cache\RedisCacheTagsChecksum',
+                'arguments' => ['@redis.factory'],
+            ],
+            'serialization.phpserialize' => ['class' => 'Drupal\Component\Serialization\PhpSerialize'],
+        ],
     ];
 }
 
 // Configure private and temporary file paths.
-if (!isset($settings['file_private_path'])) {
+if (! isset($settings['file_private_path'])) {
     $settings['file_private_path'] = $platformsh->appDir . '/private';
 }
-if (!isset($config['system.file']['path']['temporary'])) {
+if (! isset($config['system.file']['path']['temporary'])) {
     $config['system.file']['path']['temporary'] = $platformsh->appDir . '/tmp';
 }
 
 // Configure the default PhpStorage and Twig template cache directories.
-if (!isset($settings['php_storage']['default'])) {
+if (! isset($settings['php_storage']['default'])) {
     $settings['php_storage']['default']['directory'] = $settings['file_private_path'];
 }
-if (!isset($settings['php_storage']['twig'])) {
+if (! isset($settings['php_storage']['twig'])) {
     $settings['php_storage']['twig']['directory'] = $settings['file_private_path'];
 }
 
 // Set trusted hosts based on Platform.sh routes.
-if (!isset($settings['trusted_host_patterns'])) {
-    $routes = $platformsh->routes();
+if (! isset($settings['trusted_host_patterns'])) {
+    $routes   = $platformsh->routes();
     $patterns = [];
     foreach ($routes as $url => $route) {
         $host = parse_url($url, PHP_URL_HOST);
-        if ($host !== false && $route['type'] == 'upstream' && $route['upstream'] == $platformsh->applicationName) {
-            // Replace asterisk wildcards with a regular expression.
-            $host_pattern = str_replace('\*', '[^\.]+', preg_quote($host));
-            $patterns[] = '^' . $host_pattern . '$';
+        if ($host === false || $route['type'] !== 'upstream' || $route['upstream'] !== $platformsh->applicationName) {
+            continue;
         }
+
+        // Replace asterisk wildcards with a regular expression.
+        $host_pattern = str_replace('\*', '[^\.]+', preg_quote($host));
+        $patterns[]   = '^' . $host_pattern . '$';
     }
     $settings['trusted_host_patterns'] = array_unique($patterns);
 }
@@ -106,8 +108,8 @@ if (!isset($settings['trusted_host_patterns'])) {
 // Import variables prefixed with 'd8settings:' into $settings
 // and 'd8config:' into $config.
 foreach ($platformsh->variables() as $name => $value) {
-    $parts = explode(':', $name);
-    list($prefix, $key) = array_pad($parts, 3, null);
+    $parts          = explode(':', $name);
+    [$prefix, $key] = array_pad($parts, 3, null);
     switch ($prefix) {
     // Variables that begin with `d8settings` or `drupal` get mapped
     // to the $settings array verbatim, even if the value is an array.

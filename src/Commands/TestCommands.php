@@ -1,8 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace wearewondrous\PshToolbelt\Commands;
 
+use Robo\Exception\TaskException;
 use Robo\Robo;
+use const JSON_PRETTY_PRINT;
+use function getenv;
+use function json_encode;
+use function print_r;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -11,11 +18,10 @@ use Robo\Robo;
  */
 class TestCommands extends BaseCommands
 {
-
     /**
      * Print out the current configuration with env overwrites.
      */
-    public function testVars(): void
+    public function testVars() : void
     {
         $this->say('=== Env vars =============================');
         print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
@@ -26,9 +32,9 @@ class TestCommands extends BaseCommands
     /**
      * Test the local vm by running drush status
      *
-     * @throws \Robo\Exception\TaskException
+     * @throws TaskException
      */
-    public function testLocalDrush(): void
+    public function testLocalDrush() : void
     {
         $this->taskDrushStack(Robo::Config()->get('drush.path'))
             ->siteAlias($this->drushAlias)

@@ -7,6 +7,7 @@ namespace wearewondrous\PshToolbelt\Tests;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use wearewondrous\PshToolbelt\ConfigFileReader;
 use function file_get_contents;
 
@@ -81,14 +82,13 @@ final class ConfigFileReaderTest extends TestCase
         );
     }
 
-    /**
-     * @expectedException \Symfony\Component\Filesystem\Exception\FileNotFoundException
-     */
     public function testGetProjectLocalConfigFilenameWithNoneFailsHard() : void
     {
         $structure = ['test.yml' => 'test'];
 
         $localFileSystem = vfsStream::setup('root', null, $structure);
+
+        $this->expectException(FileNotFoundException::class);
 
         $configFileReader = new ConfigFileReader($localFileSystem->url());
         $configFileReader->getProjectLocalConfigFilename();

@@ -1,11 +1,6 @@
 <?php
 
-declare(strict_types=1);
-
-/**
- * This file is included very early. See autoload.files in composer.json and
- * https://getcomposer.org/doc/04-schema.md#files
- */
+declare(strict_types = 1);
 
 use Dotenv\Dotenv;
 use wearewondrous\PshToolbelt\FileSystemHelper;
@@ -15,9 +10,10 @@ use wearewondrous\PshToolbelt\FileSystemHelper;
  */
 
 try {
-    $fileSystemHelper = new FileSystemHelper();
+  $fileSystemHelper = new FileSystemHelper();
 
-    Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
-} catch (Throwable $e) {
-  // suppressing exception
+  Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
+}
+catch (Throwable $e) {
+  // Suppressing exception.
 }

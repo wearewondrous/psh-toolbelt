@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
@@ -16,29 +16,28 @@ use function print_r;
  *
  * @see http://robo.li/
  */
-class TestCommands extends BaseCommands
-{
-    /**
-     * Print out the current configuration with env overwrites.
-     */
-    public function testVars() : void
-    {
-        $this->say('=== Env vars =============================');
-        print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
-        $this->say('=== Robo vars ============================');
-        print_r(json_encode(Robo::Config()->export(), JSON_PRETTY_PRINT) . "\n");
-    }
+class TestCommands extends BaseCommands {
 
-    /**
-     * Test the local vm by running drush status
-     *
-     * @throws TaskException
-     */
-    public function testLocalDrush() : void
-    {
-        $this->taskDrushStack(Robo::Config()->get('drush.path'))
-            ->siteAlias($this->drushAlias)
-            ->status()
-            ->run();
-    }
+  /**
+   * Print out the current configuration with env overwrites.
+   */
+  public function testVars() : void {
+    $this->say('=== Env vars =============================');
+    print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
+    $this->say('=== Robo vars ============================');
+    print_r(json_encode(Robo::Config()->export(), JSON_PRETTY_PRINT) . "\n");
+  }
+
+  /**
+   * Test the local vm by running drush status.
+   *
+   * @throws \Robo\Exception\TaskException
+   */
+  public function testLocalDrush() : void {
+    $this->taskDrushStack(Robo::Config()->get('drush.path'))
+      ->siteAlias($this->drushAlias)
+      ->status()
+      ->run();
+  }
+
 }

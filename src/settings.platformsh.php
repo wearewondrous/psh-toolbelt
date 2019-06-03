@@ -1,17 +1,17 @@
 <?php
-
-declare(strict_types = 1);
-
-use Platformsh\ConfigReader\Config;
-
-$platformsh = new Config();
+// phpcs:ignoreFile -- this is not a core file
+/**
+ * @file
+ * Platform.sh settings.
+ */
+$platformsh = new \Platformsh\ConfigReader\Config();
 
 if (!$platformsh->inRuntime()) {
   return;
 }
 
 // Configure the database.
-$creds                           = $platformsh->credentials('database');
+$creds = $platformsh->credentials('database');
 $databases['default']['default'] = [
   'driver' => $creds['scheme'],
   'database' => $creds['path'],
@@ -19,7 +19,7 @@ $databases['default']['default'] = [
   'password' => $creds['password'],
   'host' => $creds['host'],
   'port' => $creds['port'],
-  'pdo' => [PDO::MYSQL_ATTR_COMPRESS => !empty($creds['query']['compression'])],
+  'pdo' => [PDO::MYSQL_ATTR_COMPRESS => !empty($creds['query']['compression'])]
 ];
 
 // Enable Redis caching.
@@ -27,7 +27,7 @@ if ($platformsh->hasRelationship('redis') && !drupal_installation_attempted() &&
   $redis = $platformsh->credentials('redis');
 
   // Set Redis as the default backend for any cache bin not otherwise specified.
-  $settings['cache']['default']         = 'cache.backend.redis';
+  $settings['cache']['default'] = 'cache.backend.redis';
   $settings['redis.connection']['host'] = $redis['host'];
   $settings['redis.connection']['port'] = $redis['port'];
 
@@ -53,14 +53,12 @@ if ($platformsh->hasRelationship('redis') && !drupal_installation_attempted() &&
   $settings['bootstrap_container_definition'] = [
     'parameters' => [],
     'services' => [
-      'redis.factory' => ['class' => 'Drupal\redis\ClientFactory'],
+      'redis.factory' => [
+        'class' => 'Drupal\redis\ClientFactory',
+      ],
       'cache.backend.redis' => [
         'class' => 'Drupal\redis\Cache\CacheBackendFactory',
-        'arguments' => [
-          '@redis.factory',
-          '@cache_tags_provider.container',
-          '@serialization.phpserialize'
-        ],
+        'arguments' => ['@redis.factory', '@cache_tags_provider.container', '@serialization.phpserialize'],
       ],
       'cache.container' => [
         'class' => '\Drupal\redis\Cache\PhpRedis',
@@ -71,7 +69,9 @@ if ($platformsh->hasRelationship('redis') && !drupal_installation_attempted() &&
         'class' => 'Drupal\redis\Cache\RedisCacheTagsChecksum',
         'arguments' => ['@redis.factory'],
       ],
-      'serialization.phpserialize' => ['class' => 'Drupal\Component\Serialization\PhpSerialize'],
+      'serialization.phpserialize' => [
+        'class' => 'Drupal\Component\Serialization\PhpSerialize',
+      ],
     ],
   ];
 }
@@ -94,17 +94,15 @@ if (!isset($settings['php_storage']['twig'])) {
 
 // Set trusted hosts based on Platform.sh routes.
 if (!isset($settings['trusted_host_patterns'])) {
-  $routes   = $platformsh->routes();
+  $routes = $platformsh->routes();
   $patterns = [];
   foreach ($routes as $url => $route) {
     $host = parse_url($url, PHP_URL_HOST);
-    if ($host === FALSE || $route['type'] !== 'upstream' || $route['upstream'] !== $platformsh->applicationName) {
-      continue;
+    if ($host !== FALSE && $route['type'] == 'upstream' && $route['upstream'] == $platformsh->applicationName) {
+      // Replace asterisk wildcards with a regular expression.
+      $host_pattern = str_replace('\*', '[^\.]+', preg_quote($host));
+      $patterns[] = '^' . $host_pattern . '$';
     }
-
-    // Replace asterisk wildcards with a regular expression.
-    $host_pattern = str_replace('\*', '[^\.]+', preg_quote($host));
-    $patterns[]   = '^' . $host_pattern . '$';
   }
   $settings['trusted_host_patterns'] = array_unique($patterns);
 }
@@ -112,18 +110,17 @@ if (!isset($settings['trusted_host_patterns'])) {
 // Import variables prefixed with 'd8settings:' into $settings
 // and 'd8config:' into $config.
 foreach ($platformsh->variables() as $name => $value) {
-  $parts          = explode(':', $name);
-  [$prefix, $key] = array_pad($parts, 3, NULL);
+  $parts = explode(':', $name);
+  list($prefix, $key) = array_pad($parts, 3, null);
   switch ($prefix) {
     // Variables that begin with `d8settings` or `drupal` get mapped
     // to the $settings array verbatim, even if the value is an array.
     // For example, a variable named d8settings:example-setting' with
-    // value 'foo' becomes $settings['example-setting'] = 'foo';.
+    // value 'foo' becomes $settings['example-setting'] = 'foo';
     case 'd8settings':
     case 'drupal':
       $settings[$key] = $value;
       break;
-
     // Variables that begin with `d8config` get mapped to the $config
     // array.  Deeply nested variable names, with colon delimiters,
     // get mapped to deeply nested array elements. Array values

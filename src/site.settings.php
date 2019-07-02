@@ -15,14 +15,14 @@ if (!isset($settings)) {
 
 $settings['container_yamls'][] = '../services/default.services.yml';
 
-// Load service overrides
+// Load service overrides.
 // @DEPRECATED
-if(file_exists($app_root . '/' . $site_path . '/services.yml')) {
+if (file_exists($app_root . '/' . $site_path . '/services.yml')) {
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
 }
 
-// Load service overrides
-if(file_exists($app_root . '/' . $site_path . '/override.services.yml')) {
+// Load service overrides.
+if (file_exists($app_root . '/' . $site_path . '/override.services.yml')) {
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/override.services.yml';
 }
 

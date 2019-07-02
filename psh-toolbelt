@@ -9,7 +9,8 @@ use wearewondrous\PshToolbelt\Commands\TestCommands;
 use wearewondrous\PshToolbelt\Commands\UpdateCommands;
 
 $pharPath = \Phar::running(true);
-if ($pharPath) {
+
+if ($pharPath !== '') {
   $autoloaderPath = "$pharPath/vendor/autoload.php";
 } else {
   if (file_exists(__DIR__.'/vendor/autoload.php')) {

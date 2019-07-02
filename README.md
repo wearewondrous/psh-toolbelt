@@ -1,5 +1,8 @@
 # Platform.sh Toolbelt
 
+
+[![Build Status](https://travis-ci.com/wearewondrous/psh-toolbelt.svg?branch=master)](https://travis-ci.com/wearewondrous/psh-toolbelt)
+
 Make the Drupal 8 installation highly configurable using:
 
 - Robo

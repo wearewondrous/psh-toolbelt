@@ -183,12 +183,31 @@ class BackupCommands extends BaseCommands {
 
       $dirPath = $dir . '/' . $file;
 
-      if (!is_dir($dirPath) || !$this->isBackupOutdated($dirPath)) {
+      if (!is_dir($dirPath)) {
         continue;
       }
 
-      $removedFolders[] = $dirPath;
-      unlink($dirPath);
+      if (!$this->isBackupOutdated($dirPath)) {
+        continue;
+      }
+
+      $directories = glob($dirPath . "/*");
+
+      if ($directories === FALSE) {
+        continue;
+      }
+
+      // first, clear contents.
+      array_map('unlink', $directories);
+      // second, rm empty folder.
+      if (rmdir($dirPath)) {
+        $removedFolders[] = $dirPath;
+      }
+      else {
+        $this->sentryClient->captureMessage("Could not wipe folder: " . $dirPath, [], [
+          'level' => 'warning',
+        ]);
+      }
     }
 
     closedir($dir_handle);

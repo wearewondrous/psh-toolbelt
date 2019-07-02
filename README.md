@@ -1,5 +1,8 @@
 # Platform.sh Toolbelt
 
+
+[![Build Status](https://travis-ci.com/wearewondrous/psh-toolbelt.svg?branch=master)](https://travis-ci.com/wearewondrous/psh-toolbelt)
+
 Make the Drupal 8 installation highly configurable using:
 
 - Robo
@@ -47,6 +50,10 @@ if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
   include $app_root . '/' . $site_path . '/settings.local.php';
 }
 ```
+
+### services
+
+If your project needs to overwrite the default services use a file called local.services.yml
 
 ### `robo.yml.dist` (required)
 

@@ -1,18 +1,19 @@
 <?php
-/**
- * This file is included very early. See autoload.files in composer.json and
- * https://getcomposer.org/doc/04-schema.md#files
- */
+
+declare(strict_types = 1);
 
 use Dotenv\Dotenv;
-use wearewondrous\PshToolbelt\SiteSettings;
+use wearewondrous\PshToolbelt\FileSystemHelper;
 
 /**
  * Load any .env file. See /.env.dist.
  */
 
 try {
-  Dotenv::create(SiteSettings::getRootDir())->safeLoad();
-} catch (Exception $e) {
-  // suppressing exception
+  $fileSystemHelper = new FileSystemHelper();
+
+  Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
+}
+catch (Throwable $e) {
+  // Suppressing exception.
 }

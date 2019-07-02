@@ -81,7 +81,6 @@ robots.txt
 /CHANGELOG.txt
 /COPYRIGHT.txt
 /INSTALL*.txt
-/LICENSE.txt
 /MAINTAINERS.txt
 /UPGRADE.txt
 /README.txt
@@ -113,3 +112,5 @@ composer.phar
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 
+.php_cs.cache
+phpcs.xml

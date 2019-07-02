@@ -1,17 +1,18 @@
 <?php
 
-/**
- * @file
- */
-
 declare(strict_types = 1);
 
 use Platformsh\ConfigReader\Config;
 use wearewondrous\PshToolbelt\ConfigFileReader;
 use wearewondrous\PshToolbelt\SiteSettings;
 
-$databases                     = [];
-$config_directories            = [];
+$databases          = [];
+$config_directories = [];
+
+if (!isset($settings)) {
+  $settings = [];
+}
+
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.yml';
 
 $configFileReader = new ConfigFileReader();
@@ -30,7 +31,7 @@ require 'settings.platformsh.php';
 if (PHP_SAPI === 'cli') {
   $context = drush_get_context();
 
-  if (is_array($context) && !empty($context) && isset($context['argv']) && isset($context['argv'][1])) {
+  if (is_array($context) && count($context) > 0 && isset($context['argv']) && isset($context['argv'][1])) {
     $argument = $context['argv'][1];
 
     if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {

@@ -80,7 +80,7 @@ class ConfigFileReader {
       }
     );
 
-    if (!$realProjectConfigFiles) {
+    if (count($realProjectConfigFiles) === 0) {
       throw new FileNotFoundException('No valid configuration files found');
     }
 

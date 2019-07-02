@@ -50,20 +50,21 @@ class UpdateCommands extends BaseCommands {
     $workspaceChanges = shell_exec(sprintf('cd %s && git status --porcelain', $app_dir));
     $currentBranch    = shell_exec(sprintf('cd %s && git rev-parse --abbrev-ref HEAD', $app_dir));
 
-    if (!$currentBranch) {
+    if ($currentBranch === NULL) {
       $currentBranch = 'master';
     }
 
-    if ($workspaceChanges) {
+    if ($workspaceChanges !== NULL) {
       $overwrite = $this->ask('There are changes in your local. Stash them? [Y/n]');
 
-      if (!$overwrite || strtolower($overwrite) !== 'n') {
+      if ($overwrite === "" || strtolower($overwrite) !== 'n') {
         $activeStash = TRUE;
         $git->exec('stash');
       }
 
       $git->exec('reset --hard');
     }
+
     // Checkout target.
     $result = $git->checkout($opt['branch'])->run();
 
@@ -71,11 +72,11 @@ class UpdateCommands extends BaseCommands {
       return;
     }
 
-    if ($opt['files']) {
+    if ($opt['files'] === TRUE) {
       $this->syncFilesFromRemote($opt['branch'], $app_dir);
     }
 
-    if ($opt['db']) {
+    if ($opt['db'] === TRUE) {
       $this->exportImportDbAndConfig($opt['branch'], $currentBranch, $app_dir);
     }
 
@@ -98,7 +99,7 @@ class UpdateCommands extends BaseCommands {
    */
   private function exportImportDbAndConfig(string $branch, string $currentBranch, string $app_dir) : void {
     $this->yell('Export config on remote', 50, 'default');
-    $drushPath = Robo::Config()->get('drush.path');
+    $drushPath = Robo::config()->get('drush.path');
     $this->_exec(sprintf("platform ssh -e %s '%s cex -y'", $branch, $drushPath));
 
     $this->yell('Pull config from remote', 50, 'default');
@@ -112,7 +113,7 @@ class UpdateCommands extends BaseCommands {
     $dbFileName = implode(
           '',
           [
-            Robo::Config()->get('drush.alias_group') . self::FILE_DELIMITER,
+            Robo::config()->get('drush.alias_group') . self::FILE_DELIMITER,
             $branch . self::FILE_DELIMITER,
             date(self::DATE_FORMAT),
             self::DB_DUMP_SUFFIX,
@@ -122,7 +123,7 @@ class UpdateCommands extends BaseCommands {
     $this->_exec(sprintf('platform db:dump -e %s -f %s%s -y', $branch, $app_dir, $dbFileName));
 
     $this->yell('🦄 Applying the magic', 50, 'default');
-    $this->taskDrushStack(Robo::Config()->get('drush.path'))
+    $this->taskDrushStack(Robo::config()->get('drush.path'))
       ->stopOnFail()
       ->dir($app_dir)
       ->siteAlias($this->drushAlias)
@@ -145,12 +146,12 @@ class UpdateCommands extends BaseCommands {
    */
   private function syncFilesFromRemote(string $branch, string $app_dir) : void {
     $this->yell('Importing files from remote', 50, 'default');
-    $publicFilesDir = Robo::Config()->get('drupal.public_files_directory');
-    $privateFilesDir = Robo::Config()->get('drupal.private_files_directory');
+    $publicFilesDir = Robo::config()->get('drupal.public_files_directory');
+    $privateFilesDir = Robo::config()->get('drupal.private_files_directory');
 
     $excludes = '--exclude=' . implode(
           ' --exclude=',
-          Robo::Config()
+          Robo::config()
             ->get('drupal.excludes')
       );
     $options = implode(

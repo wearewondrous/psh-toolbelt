@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace wearewondrous\PshToolbelt\Tests;
 
 use org\bovigo\vfs\vfsStream;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use wearewondrous\PshToolbelt\FileSystemHelper;
 
@@ -27,7 +28,7 @@ final class FileSystemHelperTest extends TestCase {
     $fileSystemHelper = new FileSystemHelper($this->fileSystem->url());
     $rootDir          = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
+    Assert::assertEquals(
           'vfs://root',
           $rootDir
       );
@@ -35,7 +36,7 @@ final class FileSystemHelperTest extends TestCase {
     $fileSystemHelper = new FileSystemHelper('/app/tests');
     $rootDir          = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
+    Assert::assertEquals(
           '/app/tests',
           $rootDir
       );
@@ -43,7 +44,7 @@ final class FileSystemHelperTest extends TestCase {
     $fileSystemHelper = new FileSystemHelper('/app/vendor/wearewondrous/psh-toolbelt/src');
     $rootDir          = $fileSystemHelper->getRootDir();
 
-    $this->assertEquals(
+    Assert::assertEquals(
           '/app/',
           $rootDir
       );

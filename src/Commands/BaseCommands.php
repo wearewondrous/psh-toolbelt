@@ -64,16 +64,16 @@ abstract class BaseCommands extends Tasks {
    * @hook init
    */
   public function initEnvironmentVars() : void {
-    Robo::Config()->replace($this->configFileReader->getRoboConfig()->export());
+    Robo::config()->replace($this->configFileReader->getRoboConfig()->export());
     // halt, if native cli commands fail.
     $this->stopOnFail();
     $this->drushAlias = implode(
           '',
           [
             '@',
-            Robo::Config()->get('drush.alias_group'),
+            Robo::config()->get('drush.alias_group'),
             '.',
-            Robo::Config()->get('drush.alias'),
+            Robo::config()->get('drush.alias'),
           ]
       );
 
@@ -83,7 +83,7 @@ abstract class BaseCommands extends Tasks {
       return;
     }
 
-    Robo::Config()->setDefault('drush.path', 'drush');
+    Robo::config()->setDefault('drush.path', 'drush');
   }
 
   protected function getEnv(string $variable) : ?string {

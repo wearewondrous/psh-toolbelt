@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace wearewondrous\PshToolbelt\Tests;
 
 use org\bovigo\vfs\vfsStream;
-use org\bovigo\vfs\vfsStreamDirectory;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use wearewondrous\PshToolbelt\ConfigFileReader;
@@ -32,7 +32,7 @@ final class ConfigFileReaderTest extends TestCase {
   public function testGetAcceptableProjectLocalConfigFilenames() : void {
     $configFileReader = new ConfigFileReader($this->fileSystem->url());
 
-    $this->assertEquals(
+    Assert::assertEquals(
           $configFileReader->getAcceptableProjectLocalConfigFilenames(),
           ['robo.yml', 'toolbelt.yml']
       );
@@ -41,7 +41,7 @@ final class ConfigFileReaderTest extends TestCase {
   public function testGetProjectLocalConfigFilename() : void {
     $configFileReader = new ConfigFileReader($this->fileSystem->url());
 
-    $this->assertEquals(
+    Assert::assertEquals(
           'robo.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
@@ -57,7 +57,7 @@ final class ConfigFileReaderTest extends TestCase {
 
     $configFileReader = new ConfigFileReader($localFileSystem->url());
 
-    $this->assertEquals(
+    Assert::assertEquals(
           'toolbelt.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
@@ -75,7 +75,7 @@ final class ConfigFileReaderTest extends TestCase {
 
     $configFileReader = new ConfigFileReader($localFileSystem->url());
 
-    $this->assertEquals(
+    Assert::assertEquals(
           'robo.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
@@ -116,7 +116,7 @@ final class ConfigFileReaderTest extends TestCase {
       ],
     ];
 
-    $this->assertEquals(
+    Assert::assertEquals(
           $wantedConfigSplitArray,
           $configFileReader->getConfigSplitFromRoboConfig()
       );

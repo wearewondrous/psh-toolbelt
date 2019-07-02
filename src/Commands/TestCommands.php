@@ -25,7 +25,7 @@ class TestCommands extends BaseCommands {
     $this->say('=== Env vars =============================');
     print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
     $this->say('=== Robo vars ============================');
-    print_r(json_encode(Robo::Config()->export(), JSON_PRETTY_PRINT) . "\n");
+    print_r(json_encode(Robo::config()->export(), JSON_PRETTY_PRINT) . "\n");
   }
 
   /**
@@ -34,7 +34,7 @@ class TestCommands extends BaseCommands {
    * @throws \Robo\Exception\TaskException
    */
   public function testLocalDrush() : void {
-    $this->taskDrushStack(Robo::Config()->get('drush.path'))
+    $this->taskDrushStack(Robo::config()->get('drush.path'))
       ->siteAlias($this->drushAlias)
       ->status()
       ->run();

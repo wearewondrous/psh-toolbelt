@@ -70,15 +70,15 @@ class BackupCommands extends BaseCommands {
     $this->projectPrefix = implode(
           '',
           [
-            Robo::Config()->get('drush.alias_group') . '-',
+            Robo::config()->get('drush.alias_group') . '-',
             $this->pshConfig->project . self::FILE_DELIMITER,
           ]
       );
     $this->sentryClient  = new Raven_Client($this->getEnv('SENTRY_DSN'));
     $this->s3Client      = new S3Client(
           [
-            'version' => Robo::Config()->get('storage.s3.version'),
-            'region' => Robo::Config()->get('storage.s3.region'),
+            'version' => Robo::config()->get('storage.s3.version'),
+            'region' => Robo::config()->get('storage.s3.region'),
             'credentials' => [
               'key' => $this->getEnv('AWS_ACCESS_KEY_ID'),
               'secret' => $this->getEnv('AWS_SECRET_KEY_ID'),
@@ -132,7 +132,7 @@ class BackupCommands extends BaseCommands {
     ];
 
     foreach ($variables as $variable) {
-      if (!$this->getEnv($variable)) {
+      if ($this->getEnv($variable) === NULL) {
         throw new Exception(sprintf('Environment variable %s missing', $variable));
       }
     }
@@ -143,7 +143,7 @@ class BackupCommands extends BaseCommands {
       return TRUE;
     }
     // Look for env var and in PLATFORM_VARIABLES.
-    if ($this->getEnv('BACKUP_THIS_BRANCH')) {
+    if ($this->getEnv('BACKUP_THIS_BRANCH') !== NULL) {
       return TRUE;
     }
 
@@ -159,8 +159,8 @@ class BackupCommands extends BaseCommands {
     $dir = 's3://' . implode(
           '/',
           [
-            Robo::Config()->get('storage.s3.upload_bucket'),
-            Robo::Config()->get('drush.alias_group'),
+            Robo::config()->get('storage.s3.upload_bucket'),
+            Robo::config()->get('drush.alias_group'),
           ]
       );
 
@@ -170,7 +170,7 @@ class BackupCommands extends BaseCommands {
 
     $dir_handle = opendir($dir);
 
-    if (!$dir_handle) {
+    if ($dir_handle === FALSE) {
       return;
     }
 
@@ -193,7 +193,7 @@ class BackupCommands extends BaseCommands {
 
     closedir($dir_handle);
 
-    if (!$removedFolders) {
+    if (count($removedFolders) === 0) {
       return;
     }
 
@@ -207,7 +207,7 @@ class BackupCommands extends BaseCommands {
   private function isBackupOutdated(string $dirPath) : bool {
     $lastModified = $this->getLastModifiedFromFolder($dirPath);
 
-    return time() - $lastModified >= (int) Robo::Config()
+    return time() - $lastModified >= (int) Robo::config()
       ->get('storage.backup.max_age');
   }
 
@@ -215,7 +215,7 @@ class BackupCommands extends BaseCommands {
     $fileParts = explode(self::FILE_DELIMITER, $folderName);
     $datetime = array_pop($fileParts);
 
-    if (!$datetime) {
+    if ($datetime === NULL) {
       return 0;
     }
 
@@ -231,26 +231,26 @@ class BackupCommands extends BaseCommands {
           '/',
           [
             $this->pshConfig->appDir,
-            trim(Robo::Config()->get('platform.mounts.temp'), '/'),
+            trim(Robo::config()->get('platform.mounts.temp'), '/'),
             $fileName,
           ]
       );
     $objectKey  = implode(
           '/',
           [
-            Robo::Config()->get('drush.alias_group'),
+            Robo::config()->get('drush.alias_group'),
             $prefix,
             $fileName,
           ]
       );
 
     try {
-      $drushPath = Robo::Config()->get('drush.path');
+      $drushPath = Robo::config()->get('drush.path');
       $this->_exec(sprintf('%s sql:dump | gzip > %s', $drushPath, $pathToFile));
 
       $this->s3Client->putObject(
             [
-              'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
+              'Bucket' => Robo::config()->get('storage.s3.upload_bucket'),
               'Key' => $objectKey,
               'Body' => fopen($pathToFile, 'r'),
             ]
@@ -277,14 +277,14 @@ class BackupCommands extends BaseCommands {
    */
   private function archiveAndUploadFiles(string $prefix) : void {
     $paths              = [
-      'public' => Robo::Config()->get('drupal.public_files_directory') . '/',
-      'private' => Robo::Config()->get('drupal.private_files_directory') . '/',
+      'public' => Robo::config()->get('drupal.public_files_directory') . '/',
+      'private' => Robo::config()->get('drupal.private_files_directory') . '/',
     ];
     $targetFileTemplate = $prefix . self::FILES_DUMP_SUFFIX . '.tar.gz';
     $objectKeyTemplate  = implode(
           '/',
           [
-            Robo::Config()->get('drush.alias_group'),
+            Robo::config()->get('drush.alias_group'),
             $prefix,
             $targetFileTemplate,
           ]
@@ -297,7 +297,7 @@ class BackupCommands extends BaseCommands {
               '/',
               [
                 $this->pshConfig->appDir,
-                trim(Robo::Config()->get('platform.mounts.temp'), '/'),
+                trim(Robo::config()->get('platform.mounts.temp'), '/'),
                 sprintf($targetFileTemplate, $key),
               ]
           );
@@ -312,7 +312,7 @@ class BackupCommands extends BaseCommands {
           );
         $excludes = '--exclude=' . implode(
               ' --exclude=',
-              Robo::Config()
+              Robo::config()
                 ->get('drupal.excludes')
           );
         // Tar: excludes first, create tar.
@@ -321,7 +321,7 @@ class BackupCommands extends BaseCommands {
 
         $this->s3Client->putObject(
               [
-                'Bucket' => Robo::Config()->get('storage.s3.upload_bucket'),
+                'Bucket' => Robo::config()->get('storage.s3.upload_bucket'),
                 'Key' => $objectKey,
                 'Body' => fopen($targetFile, 'r'),
               ]

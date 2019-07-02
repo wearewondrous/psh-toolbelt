@@ -117,7 +117,7 @@ class SiteSettings {
    * Trusted host patterns.
    */
   private function setTrustedHostPatterns() : void {
-    if (empty($this->settings['trusted_host_patterns'])) {
+    if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
     }
 

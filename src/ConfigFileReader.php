@@ -87,7 +87,7 @@ class ConfigFileReader {
       throw new FileNotFoundException('No valid configuration files found');
     }
 
-    return reset($realProjectConfigFiles);
+    return $this->fileSystemHelper->getRootDir() . reset($realProjectConfigFiles);
   }
 
   public function getProjectLocalConfigDistFilename(): string {

@@ -75,8 +75,19 @@ class SiteSettings {
     $this->roboConfig       = $this->configFileReader->getRoboConfig();
   }
 
-  protected function getEnv(string $variable) : ?string {
-    return $this->pshConfig->variable($variable, getenv($variable));
+  protected function getEnv(string $variableName) : ?string {
+    $envVariable = getenv($variableName);
+    $pshVariable = $this->pshConfig->variable($variableName);
+
+    if($pshVariable !== NULL) {
+      return $pshVariable;
+    }
+
+    if($envVariable !== FALSE) {
+      return $envVariable;
+    }
+
+    return NULL;
   }
 
   /**

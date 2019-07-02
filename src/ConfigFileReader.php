@@ -28,6 +28,8 @@ class ConfigFileReader {
    */
   protected $fileSystemHelper;
 
+  const VENDOR_DIST_ROBO_FILE_PATH = __DIR__ . '/../robo.yml.dist';
+
   /**
    * @param string|null $rootDirectory
    *   The root directory to use for file management.
@@ -44,6 +46,7 @@ class ConfigFileReader {
   public function createRoboConfig(): RoboConfig {
     return Robo::createConfiguration(
       [
+        self::VENDOR_DIST_ROBO_FILE_PATH,
         $this->getProjectLocalConfigDistFilename(),
         $this->getProjectLocalConfigFilename(),
       ]

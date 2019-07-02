@@ -42,7 +42,7 @@ final class ConfigFileReaderTest extends TestCase {
     $configFileReader = new ConfigFileReader($this->fileSystem->url());
 
     Assert::assertEquals(
-          'robo.yml',
+      'vfs://' . $this->fileSystem->getName() . 'robo.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
   }
@@ -58,7 +58,7 @@ final class ConfigFileReaderTest extends TestCase {
     $configFileReader = new ConfigFileReader($localFileSystem->url());
 
     Assert::assertEquals(
-          'toolbelt.yml',
+      'vfs://' . $localFileSystem->getName() . 'toolbelt.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
   }
@@ -76,7 +76,7 @@ final class ConfigFileReaderTest extends TestCase {
     $configFileReader = new ConfigFileReader($localFileSystem->url());
 
     Assert::assertEquals(
-          'robo.yml',
+      'vfs://' . $localFileSystem->getName() . 'robo.yml',
           $configFileReader->getProjectLocalConfigFilename()
       );
   }

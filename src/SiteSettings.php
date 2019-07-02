@@ -79,11 +79,11 @@ class SiteSettings {
     $envVariable = getenv($variableName);
     $pshVariable = $this->pshConfig->variable($variableName);
 
-    if($pshVariable !== NULL) {
+    if ($pshVariable !== NULL) {
       return $pshVariable;
     }
 
-    if($envVariable !== FALSE) {
+    if ($envVariable !== FALSE) {
       return $envVariable;
     }
 
@@ -136,7 +136,7 @@ class SiteSettings {
       $this->settings['trusted_host_patterns'] = [];
     }
 
-    if($pshHost !== NULL && $pshDomain !== NULL) {
+    if ($pshHost !== NULL && $pshDomain !== NULL) {
 
       $platformshHost = preg_quote($pshHost);
       $platformPattern = [
@@ -158,7 +158,7 @@ class SiteSettings {
       }
     }
 
-    if($localHost !== NULL) {
+    if ($localHost !== NULL) {
       $devIdentifier = preg_quote($localHost);
       $devPattern = [
         sprintf('^%s', $devIdentifier),

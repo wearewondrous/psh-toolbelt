@@ -1,9 +1,9 @@
 <?php
+// phpcs:ignoreFile -- this is not a core file
 /**
  * @file
  * Platform.sh settings.
  */
-
 $platformsh = new \Platformsh\ConfigReader\Config();
 
 if (!$platformsh->inRuntime()) {

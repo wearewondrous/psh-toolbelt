@@ -1,107 +1,101 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace wearewondrous\PshToolbelt;
 
-use Robo\Robo;
+use Drupal;
+use Drupal\Component\Assertion\Handle;
+use Platformsh\ConfigReader\Config as PlatformshConfig;
+use Robo\Config\Config as RoboConfig;
+use const ASSERT_ACTIVE;
+use const E_ALL;
+use function array_merge;
+use function assert_options;
+use function error_reporting;
+use function getenv;
+use function implode;
+use function ini_set;
+use function preg_quote;
+use function sprintf;
 
 class SiteSettings {
-
-  const SRC_PATH = 'vendor/wearewondrous/psh-toolbelt/src';
-  const CACHE_404_TTL = 3600;
+  public const SRC_PATH      = 'vendor/wearewondrous/psh-toolbelt/src';
+  public const CACHE_404_TTL = 3600;
 
   /**
-   * @var \Platformsh\ConfigReader\Config
-   */
+   * @var \Platformsh\ConfigReader\Config*/
   protected $pshConfig;
 
   /**
-   * @var array
-   */
+   * @var mixed[]*/
   protected $config;
 
   /**
-   * @var array
-   */
+   * @var mixed[]*/
   protected $settings;
 
   /**
-   * @var array
-   */
+   * @var mixed[]*/
   protected $databases;
 
   /**
-   * @var array
-   */
-  protected $config_directories;
+   * @var mixed[]*/
+  protected $configDirectories;
 
   /**
-   * @var \Robo\Config\Config
-   */
+   * @var \Robo\Config\Config*/
   protected $roboConfig;
 
   /**
-   * SiteSettings constructor.
+   * @var ConfigFileReader*/
+  private $configFileReader;
+
+  /**
+   * @param mixed[] $settings
+   *   Drupal settings array.
    *
-   * @param array $settings
-   * @param array $config
-   * @param array $databases
-   * @param array $config_directories
+   * @param mixed[] $config
+   *   Drupal config array.
+   *
+   * @param mixed[] $databases
+   *   Drupal databases array.
+   *
+   * @param mixed[] $config_directories
+   *   Drupal config_directories array.
    */
   public function __construct(array &$settings, array &$config, array &$databases, array &$config_directories) {
-    $this->settings =& $settings;
-    $this->config =& $config;
-    $this->databases =& $databases;
-    $this->config_directories =& $config_directories;
+    $this->settings          =& $settings;
+    $this->config            =& $config;
+    $this->databases         =& $databases;
+    $this->configDirectories =& $config_directories;
 
-    $this->pshConfig = new \Platformsh\ConfigReader\Config();
-    $this->roboConfig = self::getRoboConfig();
+    $this->pshConfig        = new PlatformshConfig();
+    $this->configFileReader = new ConfigFileReader();
+    $this->roboConfig       = $this->configFileReader->getRoboConfig();
   }
 
-  /**
-   * Get merged yml config.
-   *
-   * @return \Robo\Config\Config
-   */
-  public static function getRoboConfig(): \Robo\Config\Config {
-    $root_dir = self::getRootDir();
-
-    return Robo::createConfiguration([
-      __DIR__ . '/../robo.yml.dist',
-      $root_dir . 'robo.yml',
-    ]);
-  }
-
-  /**
-   * @return string
-   */
-  public static function getRootDir(): string {
-    return str_replace(self::SRC_PATH, '', __DIR__);
-  }
-
-  /**
-   * @param string $variable
-   *
-   * @return string|null
-   */
-  protected function getEnv(string $variable): ?string {
+  protected function getEnv(string $variable) : ?string {
     return $this->pshConfig->variable($variable, getenv($variable));
   }
 
   /**
    * Primary function to set Drupal 8 config, depending on environment.
    */
-  public function setDefaults(): void {
-    $this->settings['trusted_host_patterns'] = [];
-    $this->settings['update_free_access'] = FALSE;
-    $this->config_directories[CONFIG_SYNC_DIRECTORY] = implode('/', [
-      '..',
-      $this->roboConfig->get('drupal.config_sync_directory'),
-      $this->roboConfig->get('drupal.config.splits.default.folder'),
-    ]);
-    $this->settings['file_private_path'] = '../' . $this->roboConfig->get('drupal.private_files_directory');
-    // Sentry dsn key
-    $this->config['raven.settings']['client_key'] = $this->getEnv('SENTRY_DSN');
-    $this->settings['hash_salt'] = $this->roboConfig->get('drupal.hash_salt');
+  public function setDefaults() : void {
+    $this->settings['trusted_host_patterns']        = [];
+    $this->settings['update_free_access']           = FALSE;
+    $this->configDirectories[CONFIG_SYNC_DIRECTORY] = implode(
+          '/',
+          [
+            '..',
+            $this->roboConfig->get('drupal.config_sync_directory'),
+            $this->roboConfig->get('drupal.config.splits.default.folder'),
+          ]
+      );
+    $this->settings['file_private_path']            = '../' . $this->roboConfig->get('drupal.private_files_directory');
+    $this->config['raven.settings']['client_key']   = $this->getEnv('SENTRY_DSN');
+    $this->settings['hash_salt']                    = $this->roboConfig->get('drupal.hash_salt');
     $this->settings['file_scan_ignore_directories'] = [
       'node_modules',
       'bower_components',
@@ -120,115 +114,65 @@ class SiteSettings {
   }
 
   /**
-   * Trusted host patterns
+   * Trusted host patterns.
    */
-  private function setTrustedHostPatterns(): void {
-    if (empty($this->settings['trusted_host_patterns'])) {
+  private function setTrustedHostPatterns() : void {
+    if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
     }
 
     $platformshHost = preg_quote($this->roboConfig->get('platform.host'));
     $platformPattern = [
-      "^{$platformshHost}",
-      "^.+\.{$platformshHost}",
+      sprintf('^%s', $platformshHost),
+      sprintf('^.+\.%s', $platformshHost),
     ];
 
     $prodIdentifier = preg_quote($this->roboConfig->get('platform.domain'));
-    $prodPattern = [
-      "^.+\.{$prodIdentifier}",
-    ];
+    $prodPattern    = [sprintf('^.+\.%s', $prodIdentifier)];
 
     $this->settings['trusted_host_patterns'] = array_merge(
-      $this->settings['trusted_host_patterns'],
-      $platformPattern,
-      $prodPattern
-    );
+          $this->settings['trusted_host_patterns'],
+          $platformPattern,
+          $prodPattern
+      );
 
     if ($this->pshConfig->inRuntime()) {
       return;
     }
 
     $devIdentifier = preg_quote($this->roboConfig->get('drupal_vm.host'));
-    $devPattern = [
-      "^{$devIdentifier}",
-      "^www\.{$devIdentifier}",
+    $devPattern    = [
+      sprintf('^%s', $devIdentifier),
+      sprintf('^www\.%s', $devIdentifier),
     ];
 
     $this->settings['trusted_host_patterns'] = array_merge(
-      $this->settings['trusted_host_patterns'],
-      $devPattern
-    );
+          $this->settings['trusted_host_patterns'],
+          $devPattern
+      );
   }
 
   /**
-   * Config Split
+   * Config Split.
    */
-  private function setConfigSplit(): void {
-    $configSplit = self::getConfigSplitArray($this->roboConfig);
-    // activate development split.
+  private function setConfigSplit() : void {
+    $configSplit = $this->configFileReader->getConfigSplitFromRoboConfig();
+    // Activate development split.
     $this->config[$configSplit['prod']['machine_name']]['status'] = FALSE;
     $this->config[$configSplit['dev']['machine_name']]['status'] = TRUE;
 
     if (!$this->pshConfig->isValidPlatform()) {
       return;
     }
-    // enable production config split
+    // Enable production config split.
     $this->config[$configSplit['prod']['machine_name']]['status'] = TRUE;
     $this->config[$configSplit['dev']['machine_name']]['status'] = FALSE;
   }
 
   /**
-   * Render a config split array for default, dev, and production info
-   *
-   * @param \Robo\Config\Config $roboConfig
-   *
-   * @return array
-   */
-  public static function getConfigSplitArray(\Robo\Config\Config $roboConfig): array {
-    return [
-      'default' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.default.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.default.folder'),
-        ]),
-      ],
-      'prod' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.prod.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.prod.folder'),
-        ]),
-      ],
-      'dev' => [
-        'machine_name' => implode('.', [
-          'config_split.config_split',
-          $roboConfig->get('drupal.config.splits.dev.machine_name'),
-        ]),
-        'folder' => implode('/', [
-          DRUPAL_ROOT,
-          '..',
-          $roboConfig->get('platform.mounts.config'),
-          $roboConfig->get('drupal.config.splits.dev.folder'),
-        ]),
-      ],
-    ];
-  }
-
-  /**
    * Solr config for production if enabled.
    */
-  public function setSolr(): void {
+  public function setSolr() : void {
     if (!$this->pshConfig->inRuntime()) {
       return;
     }
@@ -242,7 +186,7 @@ class SiteSettings {
         continue;
       }
 
-      $solr = $this->pshConfig->credentials($key);
+      $solr                 = $this->pshConfig->credentials($key);
       $searchApiMachineName = 'search_api.server.' . $config['machine_name'];
 
       $this->config[$searchApiMachineName]['backend_config']['connector_config']['host'] = $solr['host'];
@@ -254,26 +198,24 @@ class SiteSettings {
   /**
    * Development config for Redis in VM.
    */
-  public function setDevRedisSettings(): void {
+  public function setDevRedisSettings() : void {
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/example.services.yml';
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/redis.services.yml';
 
     $this->settings['cache_prefix'] = 'drupal';
 
     $this->settings['redis.connection']['interface'] = 'PhpRedis';
-    $this->settings['redis.connection']['host'] = '127.0.0.1';
-    $this->settings['cache']['default'] = 'cache.backend.redis';
-    $this->settings['cache_ttl_4xx'] = self::CACHE_404_TTL;
+    $this->settings['redis.connection']['host']      = '127.0.0.1';
+    $this->settings['cache']['default']              = 'cache.backend.redis';
+    $this->settings['cache_ttl_4xx']                 = self::CACHE_404_TTL;
 
-    $class_loader = require DRUPAL_ROOT . '/../vendor/autoload.php';
+    $class_loader = include DRUPAL_ROOT . '/../vendor/autoload.php';
     $class_loader->addPsr4('Drupal\\redis\\', 'modules/contrib/redis/src');
 
     $this->settings['bootstrap_container_definition'] = [
       'parameters' => [],
       'services' => [
-        'redis.factory' => [
-          'class' => 'Drupal\redis\ClientFactory',
-        ],
+        'redis.factory' => ['class' => 'Drupal\redis\ClientFactory'],
         'cache.backend.redis' => [
           'class' => 'Drupal\redis\Cache\CacheBackendFactory',
           'arguments' => [
@@ -291,9 +233,7 @@ class SiteSettings {
           'class' => 'Drupal\redis\Cache\RedisCacheTagsChecksum',
           'arguments' => ['@redis.factory'],
         ],
-        'serialization.phpserialize' => [
-          'class' => 'Drupal\Component\Serialization\PhpSerialize',
-        ],
+        'serialization.phpserialize' => ['class' => 'Drupal\Component\Serialization\PhpSerialize'],
       ],
     ];
   }
@@ -301,36 +241,36 @@ class SiteSettings {
   /**
    * Development settings for the VM.
    */
-  public function setDevSettings(): void {
-    // error logging
+  public function setDevSettings() : void {
+    // Error logging.
     error_reporting(E_ALL);
     ini_set('display_errors', TRUE);
     ini_set('display_startup_errors', TRUE);
-    // http headers
+    // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
 
     assert_options(ASSERT_ACTIVE, TRUE);
-    \Drupal\Component\Assertion\Handle::register();
-    // verbose error logging
+    Handle::register();
+    // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
 
     if ($this->roboConfig->get('drupal_vm.disable_cache')) {
-      // disable frontend preprocesing
+      // Disable frontend preprocesing.
       $this->config['system.performance']['css']['preprocess'] = FALSE;
       $this->config['system.performance']['js']['preprocess'] = FALSE;
-      // Cache settings, use redis but do not cache render
-      $this->settings['container_yamls'][] = DRUPAL_ROOT . '/../vendor/wearewondrous/psh-toolbelt/services/local.services.yml';
-      $this->settings['cache']['bins']['render'] = 'cache.backend.null';
+      // Cache settings, use redis but do not cache render.
+      $this->settings['container_yamls'][]                   = DRUPAL_ROOT . '/sites/default/local.services.yml';
+      $this->settings['cache']['bins']['render']             = 'cache.backend.null';
       $this->settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
-      $this->settings['cache']['bins']['page'] = 'cache.backend.null';
+      $this->settings['cache']['bins']['page']               = 'cache.backend.null';
     }
 
-    $this->settings['deployment_identifier'] = \Drupal::VERSION;
+    $this->settings['deployment_identifier']          = Drupal::VERSION;
     $this->settings['extension_discovery_scan_tests'] = FALSE;
-    $this->settings['rebuild_access'] = TRUE;
-    $this->settings['skip_permissions_hardening'] = TRUE;
-    $this->settings['update_free_access'] = TRUE;
-    // database settings
+    $this->settings['rebuild_access']                 = TRUE;
+    $this->settings['skip_permissions_hardening']     = TRUE;
+    $this->settings['update_free_access']             = TRUE;
+    // Database settings.
     $this->databases['default']['default'] = [
       'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
       'driver' => 'mysql',
@@ -342,4 +282,5 @@ class SiteSettings {
       'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
     ];
   }
+
 }

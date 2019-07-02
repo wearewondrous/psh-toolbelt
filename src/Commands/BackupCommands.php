@@ -191,14 +191,14 @@ class BackupCommands extends BaseCommands {
         continue;
       }
 
-      $directories = glob($dirPath . "/*");
+      $files = glob($dirPath . "/*");
 
-      if ($directories === FALSE) {
+      if ($files === FALSE) {
         continue;
       }
 
       // first, clear contents.
-      array_map('unlink', $directories);
+      array_map('unlink', $files);
       // second, rm empty folder.
       if (rmdir($dirPath)) {
         $removedFolders[] = $dirPath;

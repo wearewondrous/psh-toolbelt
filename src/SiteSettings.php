@@ -128,39 +128,48 @@ class SiteSettings {
    * Trusted host patterns.
    */
   private function setTrustedHostPatterns() : void {
+    $pshHost = $this->roboConfig->get('platform.host');
+    $pshDomain = $this->roboConfig->get('platform.domain');
+    $localHost = $this->roboConfig->get('drupal_vm.host');
+
     if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
     }
 
-    $platformshHost = preg_quote($this->roboConfig->get('platform.host'));
-    $platformPattern = [
-      sprintf('^%s', $platformshHost),
-      sprintf('^.+\.%s', $platformshHost),
-    ];
+    if($pshHost !== NULL && $pshDomain !== NULL) {
 
-    $prodIdentifier = preg_quote($this->roboConfig->get('platform.domain'));
-    $prodPattern    = [sprintf('^.+\.%s', $prodIdentifier)];
+      $platformshHost = preg_quote($pshHost);
+      $platformPattern = [
+        sprintf('^%s', $platformshHost),
+        sprintf('^.+\.%s', $platformshHost),
+      ];
 
-    $this->settings['trusted_host_patterns'] = array_merge(
-          $this->settings['trusted_host_patterns'],
-          $platformPattern,
-          $prodPattern
+      $prodIdentifier = preg_quote($pshDomain);
+      $prodPattern = [sprintf('^.+\.%s', $prodIdentifier)];
+
+      $this->settings['trusted_host_patterns'] = array_merge(
+        $this->settings['trusted_host_patterns'],
+        $platformPattern,
+        $prodPattern
       );
 
-    if ($this->pshConfig->inRuntime()) {
-      return;
+      if ($this->pshConfig->inRuntime()) {
+        return;
+      }
     }
 
-    $devIdentifier = preg_quote($this->roboConfig->get('drupal_vm.host'));
-    $devPattern    = [
-      sprintf('^%s', $devIdentifier),
-      sprintf('^www\.%s', $devIdentifier),
-    ];
+    if($localHost !== NULL) {
+      $devIdentifier = preg_quote($localHost);
+      $devPattern = [
+        sprintf('^%s', $devIdentifier),
+        sprintf('^www\.%s', $devIdentifier),
+      ];
 
-    $this->settings['trusted_host_patterns'] = array_merge(
-          $this->settings['trusted_host_patterns'],
-          $devPattern
+      $this->settings['trusted_host_patterns'] = array_merge(
+        $this->settings['trusted_host_patterns'],
+        $devPattern
       );
+    }
   }
 
   /**

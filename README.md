@@ -51,6 +51,10 @@ if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
 }
 ```
 
+### services
+
+If your project needs to overwrite the default services use a file called local.services.yml
+
 ### `robo.yml.dist` (required)
 
 Copy over the default config from the `robo.yml.dist` in the project root, and name it `robo.yml`.

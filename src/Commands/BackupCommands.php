@@ -200,7 +200,7 @@ class BackupCommands extends BaseCommands {
 
       $directories = glob($dirPath . "/*");
 
-      if($directories === FALSE) {
+      if ($directories === FALSE) {
         continue;
       }
 

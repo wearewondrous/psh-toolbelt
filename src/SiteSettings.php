@@ -259,7 +259,7 @@ class SiteSettings {
       $this->config['system.performance']['css']['preprocess'] = FALSE;
       $this->config['system.performance']['js']['preprocess'] = FALSE;
       // Cache settings, use redis but do not cache render.
-      $this->settings['container_yamls'][]                   = DRUPAL_ROOT . '/sites/default/local.services.yml';
+      $this->settings['container_yamls'][]                   = DRUPAL_ROOT . '/../vendor/wearewondrous/psh-toolbelt/services/development.services.yml';
       $this->settings['cache']['bins']['render']             = 'cache.backend.null';
       $this->settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
       $this->settings['cache']['bins']['page']               = 'cache.backend.null';

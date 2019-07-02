@@ -264,8 +264,8 @@ class SiteSettings {
   public function setDevSettings() : void {
     // Error logging.
     error_reporting(E_ALL);
-    ini_set('display_errors', TRUE);
-    ini_set('display_startup_errors', TRUE);
+    ini_set('display_errors', 'On');
+    ini_set('display_startup_errors', 'On');
     // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
 

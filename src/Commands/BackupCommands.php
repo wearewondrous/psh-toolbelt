@@ -122,9 +122,9 @@ class BackupCommands extends BaseCommands {
   }
 
   /**
-   * Clean up the current branch storage by removing old backups
+   * Clean up the current branch storage by removing old backups.
    */
-  public function backupCleanup() {
+  public function backupCleanup() : void {
     $this->cleanupRemote();
   }
 
@@ -197,13 +197,21 @@ class BackupCommands extends BaseCommands {
       if (!$this->isBackupOutdated($dirPath)) {
         continue;
       }
-      // first, clear contents
-      array_map('unlink', glob($dirPath . "/*"));
-      // second, rm empty folder
+
+      $directories = glob($dirPath . "/*");
+
+      if($directories === FALSE) {
+        continue;
+      }
+
+      // first, clear contents.
+      array_map('unlink', $directories);
+      // second, rm empty folder.
       if (rmdir($dirPath)) {
         $removedFolders[] = $dirPath;
-      } else {
-        $this->sentryClient->captureMessage("Could not wipe folder: " . $dirPath, NULL, [
+      }
+      else {
+        $this->sentryClient->captureMessage("Could not wipe folder: " . $dirPath, [], [
           'level' => 'warning',
         ]);
       }

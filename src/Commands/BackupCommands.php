@@ -122,13 +122,6 @@ class BackupCommands extends BaseCommands {
   }
 
   /**
-   * Clean up the current branch storage by removing old backups.
-   */
-  public function backupCleanup() : void {
-    $this->cleanupRemote();
-  }
-
-  /**
    * @throws \Exception
    */
   private function validateEnvVars() : void {

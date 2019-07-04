@@ -220,6 +220,10 @@ class BackupCommands extends BaseCommands {
     if (is_dir($folder)) {
       $handle = opendir($folder);
 
+      if($handle === FALSE) {
+        return FALSE;
+      }
+
       while ($subFile = readdir($handle)) {
         if ($subFile == '.' or $subFile == '..') {
           continue;
@@ -227,7 +231,8 @@ class BackupCommands extends BaseCommands {
 
         if (is_file($subFile)) {
           return unlink("{$folder}/{$subFile}");
-        } else {
+        }
+        else {
           return $this->deleteFolderRecursively("{$folder}/{$subFile}");
         }
       }

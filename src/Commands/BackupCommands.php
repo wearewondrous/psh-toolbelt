@@ -191,16 +191,9 @@ class BackupCommands extends BaseCommands {
         continue;
       }
 
-      $directories = glob($dirPath . "/*");
+      $folderDeleted = $this->deleteFolderRecursively($dirPath);
 
-      if ($directories === FALSE) {
-        continue;
-      }
-
-      // first, clear contents.
-      array_map('unlink', $directories);
-      // second, rm empty folder.
-      if (rmdir($dirPath)) {
+      if ($folderDeleted) {
         $removedFolders[] = $dirPath;
       }
       else {
@@ -221,6 +214,30 @@ class BackupCommands extends BaseCommands {
           [],
           ['level' => 'info']
       );
+  }
+
+  private function deleteFolderRecursively(string $folder) : bool {
+    if (is_dir($folder)) {
+      $handle = opendir($folder);
+
+      while ($subFile = readdir($handle)) {
+        if ($subFile == '.' or $subFile == '..') {
+          continue;
+        }
+
+        if (is_file($subFile)) {
+          return unlink("{$folder}/{$subFile}");
+        } else {
+          return $this->deleteFolderRecursively("{$folder}/{$subFile}");
+        }
+      }
+
+      closedir($handle);
+      return rmdir($folder);
+    }
+    else {
+      return unlink($folder);
+    }
   }
 
   private function isBackupOutdated(string $dirPath) : bool {

@@ -63,3 +63,8 @@ drupal_vm:
     password: drupal
     port: 3306
     user: drupal
+
+redis:
+  local: true
+  dev: true
+  prod: true

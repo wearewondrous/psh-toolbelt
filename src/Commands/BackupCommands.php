@@ -220,7 +220,7 @@ class BackupCommands extends BaseCommands {
     if (is_dir($folder)) {
       $handle = opendir($folder);
 
-      if($handle === FALSE) {
+      if ($handle === FALSE) {
         return FALSE;
       }
 

@@ -20,8 +20,11 @@ use function preg_quote;
 use function sprintf;
 
 class SiteSettings {
-  public const SRC_PATH      = 'vendor/wearewondrous/psh-toolbelt/src';
-  public const CACHE_404_TTL = 3600;
+  public const SRC_PATH         = 'vendor/wearewondrous/psh-toolbelt/src';
+  public const CACHE_404_TTL    = 3600;
+  public const LOCAL_IDENTIFIER = 'local';
+  public const DEV_IDENTIFIER   = 'dev';
+  public const PROD_IDENTIFIER  = 'prod';
 
   /**
    * @var \Platformsh\ConfigReader\Config*/
@@ -97,16 +100,17 @@ class SiteSettings {
     $this->settings['trusted_host_patterns']        = [];
     $this->settings['update_free_access']           = FALSE;
     $this->configDirectories[CONFIG_SYNC_DIRECTORY] = implode(
-          '/',
-          [
-            '..',
-            $this->roboConfig->get('drupal.config_sync_directory'),
-            $this->roboConfig->get('drupal.config.splits.default.folder'),
-          ]
-      );
+      '/',
+      [
+        '..',
+        $this->roboConfig->get('drupal.config_sync_directory'),
+        $this->roboConfig->get('drupal.config.splits.default.folder'),
+      ]
+    );
     $this->settings['file_private_path']            = '../' . $this->roboConfig->get('drupal.private_files_directory');
     $this->config['raven.settings']['client_key']   = $this->getEnv('SENTRY_DSN');
     $this->settings['hash_salt']                    = $this->roboConfig->get('drupal.hash_salt');
+    $this->settings['cache_ttl_4xx']                = self::CACHE_404_TTL;
     $this->settings['file_scan_ignore_directories'] = [
       'node_modules',
       'bower_components',
@@ -116,12 +120,13 @@ class SiteSettings {
     $this->setConfigSplit();
     $this->setSolr();
 
-    if ($this->pshConfig->isValidPlatform()) {
-      return;
+    if ($this->shouldUseRedis()) {
+      $this->setRedisSettings();
     }
 
-    $this->setDevRedisSettings();
-    $this->setDevSettings();
+    if ($this->shouldUseDevelopmentSettings()) {
+      $this->setDevSettings();
+    }
   }
 
   /**
@@ -218,16 +223,12 @@ class SiteSettings {
   /**
    * Development config for Redis in VM.
    */
-  public function setDevRedisSettings() : void {
+  public function setRedisSettings() : void {
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/example.services.yml';
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/redis.services.yml';
 
     $this->settings['cache_prefix'] = 'drupal';
-
-    $this->settings['redis.connection']['interface'] = 'PhpRedis';
-    $this->settings['redis.connection']['host']      = '127.0.0.1';
-    $this->settings['cache']['default']              = 'cache.backend.redis';
-    $this->settings['cache_ttl_4xx']                 = self::CACHE_404_TTL;
+    $this->settings['cache']['default'] = 'cache.backend.redis';
 
     $class_loader = include DRUPAL_ROOT . '/../vendor/autoload.php';
     $class_loader->addPsr4('Drupal\\redis\\', 'modules/contrib/redis/src');
@@ -274,7 +275,12 @@ class SiteSettings {
     // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
 
-    if ($this->roboConfig->get('drupal_vm.disable_cache')) {
+    if ($this->shouldUseRedis()) {
+      $this->settings['redis.connection']['interface'] = 'PhpRedis';
+      $this->settings['redis.connection']['host']      = '127.0.0.1';
+    }
+
+    if ($this->shouldDisableCache()) {
       // Disable frontend preprocesing.
       $this->config['system.performance']['css']['preprocess'] = FALSE;
       $this->config['system.performance']['js']['preprocess'] = FALSE;
@@ -290,6 +296,7 @@ class SiteSettings {
     $this->settings['rebuild_access']                 = TRUE;
     $this->settings['skip_permissions_hardening']     = TRUE;
     $this->settings['update_free_access']             = TRUE;
+
     // Database settings.
     $this->databases['default']['default'] = [
       'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
@@ -301,6 +308,48 @@ class SiteSettings {
       'prefix' => '',
       'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
     ];
+  }
+
+  private function getCurrentEnvironment() : string {
+    if (!$this->pshConfig->isValidPlatform()) {
+      return self::LOCAL_IDENTIFIER;
+    }
+
+    if ($this->pshConfig->branch === 'master') {
+      return self::PROD_IDENTIFIER;
+    }
+
+    return self::DEV_IDENTIFIER;
+  }
+
+  private function shouldUseRedis() : bool {
+    $currentEnvironment = $this->getCurrentEnvironment();
+    $redisSettings = $this->roboConfig->get('redis.' . $currentEnvironment);
+
+    // Backwards compatible layer.
+    if ($redisSettings === NULL || !is_bool($redisSettings)) {
+      return TRUE;
+    }
+
+    return $redisSettings === TRUE;
+  }
+
+  private function shouldUseDevelopmentSettings() : bool {
+    return $this->getCurrentEnvironment() === self::LOCAL_IDENTIFIER;
+  }
+
+  private function shouldDisableCache() : bool {
+    $disableCache = $this->roboConfig->get('drupal_vm.disable_cache');
+
+    if ($disableCache === NULL) {
+      return TRUE;
+    }
+
+    if (!is_bool($disableCache)) {
+      return TRUE;
+    }
+
+    return $disableCache === TRUE;
   }
 
 }

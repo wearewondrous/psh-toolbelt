@@ -227,6 +227,12 @@ class SiteSettings {
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/example.services.yml';
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/redis.services.yml';
 
+    if($this->shouldUseProductionSettings()) {
+      $redis = $this->pshConfig->credentials('redis');
+      $this->settings['redis.connection']['host'] = $redis['host'];
+      $this->settings['redis.connection']['port'] = $redis['port'];
+    }
+
     $this->settings['cache_prefix'] = 'drupal';
     $this->settings['cache']['default'] = 'cache.backend.redis';
 
@@ -332,6 +338,10 @@ class SiteSettings {
     }
 
     return $redisSettings === TRUE;
+  }
+
+  private function shouldUseProductionSettings() : bool {
+    return $this->getCurrentEnvironment() !== self::LOCAL_IDENTIFIER;
   }
 
   private function shouldUseDevelopmentSettings() : bool {

@@ -222,7 +222,7 @@ class SiteSettings {
         ];
       });
 
-      $config[$searchApiMachineName]['backend_config']['connector_config'] = $this->pshConfig->formattedCredentials($key, 'drupal-solr');
+      $this->config[$searchApiMachineName]['backend_config']['connector_config'] = $this->pshConfig->formattedCredentials($key, 'drupal-solr');
     }
   }
 

@@ -211,12 +211,18 @@ class SiteSettings {
         continue;
       }
 
-      $solr                 = $this->pshConfig->credentials($key);
       $searchApiMachineName = 'search_api.server.' . $config['machine_name'];
 
-      $this->config[$searchApiMachineName]['backend_config']['connector_config']['host'] = $solr['host'];
-      $this->config[$searchApiMachineName]['backend_config']['connector_config']['port'] = $solr['port'];
-      $this->config[$searchApiMachineName]['backend_config']['connector_config']['core'] = $config['core'];
+      $this->roboConfig->registerFormatter('drupal-solr', function($solr) {
+        return [
+          'core' => substr($solr['path'], 5) ? : 'main',
+          'path' => '',
+          'host' => $solr['host'],
+          'port' => $solr['port'],
+        ];
+      });
+
+      $config[$searchApiMachineName]['backend_config']['connector_config'] = $this->pshConfig->formattedCredentials($key, 'drupal-solr');
     }
   }
 

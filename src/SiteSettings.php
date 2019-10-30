@@ -227,7 +227,7 @@ class SiteSettings {
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/example.services.yml';
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/redis.services.yml';
 
-    if($this->shouldUseProductionSettings()) {
+    if ($this->shouldUseProductionSettings()) {
       $redis = $this->pshConfig->credentials('redis');
       $this->settings['redis.connection']['host'] = $redis['host'];
       $this->settings['redis.connection']['port'] = $redis['port'];

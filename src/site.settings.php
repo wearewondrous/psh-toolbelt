@@ -34,16 +34,18 @@ if (!$platformsh->inRuntime()) {
 require 'settings.platformsh.php';
 
 if (PHP_SAPI === 'cli') {
-  $context = drush_get_context();
+  $args = $_SERVER['argv'];
 
-  if (is_array($context) && count($context) > 0 && isset($context['argv']) && isset($context['argv'][1])) {
-    $argument = $context['argv'][1];
+  if(is_array($args) && count($args) > 0) {
+    foreach ($args as $arg) {
+      if ($arg === 'config:export' || $arg === 'cex' || $arg === 'config-export') {
+        $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
 
-    if ($argument === 'config:export' || $argument === 'cex' || $argument === 'config-export') {
-      $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
+        $config_directories[CONFIG_SYNC_DIRECTORY]              = $configSplit['default']['folder'];
+        $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
 
-      $config_directories[CONFIG_SYNC_DIRECTORY]              = $configSplit['default']['folder'];
-      $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
+        break;
+      }
     }
   }
 }

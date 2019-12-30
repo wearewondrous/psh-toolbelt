@@ -12,9 +12,6 @@ parameters:
       message: '#Undefined variable: \$site_path#'
       path: %currentWorkingDirectory%/src/site.settings.php
     -
-      message: '#Function drush_get_context not found.#'
-      path: %currentWorkingDirectory%/src/site.settings.php
-    -
       message: '#Constant CONFIG_SYNC_DIRECTORY not found.#'
       path: %currentWorkingDirectory%/src/site.settings.php
     -

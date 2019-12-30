@@ -36,7 +36,7 @@ require 'settings.platformsh.php';
 if (PHP_SAPI === 'cli') {
   $args = $_SERVER['argv'];
 
-  if(is_array($args) && count($args) > 0) {
+  if (is_array($args) && count($args) > 0) {
     foreach ($args as $arg) {
       if ($arg === 'config:export' || $arg === 'cex' || $arg === 'config-export') {
         $configSplit = $configFileReader->getConfigSplitFromRoboConfig();

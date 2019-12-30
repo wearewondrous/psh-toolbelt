@@ -213,9 +213,9 @@ class SiteSettings {
 
       $searchApiMachineName = 'search_api.server.' . $config['machine_name'];
 
-      $this->pshConfig->registerFormatter('drupal-solr', function($solr) {
+      $this->pshConfig->registerFormatter('drupal-solr', function ($solr) {
         return [
-          'core' => substr($solr['path'], 5) ? : 'main',
+          'core' => substr($solr['path'], 5) ?: 'main',
           'path' => '',
           'host' => $solr['host'],
           'port' => $solr['port'],

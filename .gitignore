@@ -114,3 +114,4 @@ composer.phar
 
 .php_cs.cache
 phpcs.xml
+/core/

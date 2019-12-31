@@ -281,6 +281,7 @@ class SiteSettings {
     ini_set('display_startup_errors', 'On');
     // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
+    $settings['file_temp_path'] = '/tmp';
 
     assert_options(ASSERT_ACTIVE, TRUE);
     Handle::register();

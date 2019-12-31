@@ -35,8 +35,7 @@ class UpdateCommands extends BaseCommands {
     'branch|b' => 'master',
     'db|d' => FALSE,
     'files|f' => FALSE,
-  ]
-    ) : void {
+  ]) : void {
     if ($this->pshConfig->isValidPlatform()) {
       die('Sorry, only works in local Environment.');
     }

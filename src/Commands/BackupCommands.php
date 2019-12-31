@@ -95,8 +95,7 @@ class BackupCommands extends BaseCommands {
    *
    * @option $force Ignore config and force uploading the current environment
    */
-  public function backupBranch(array $opt = ['force|f' => FALSE]
-    ) : void {
+  public function backupBranch(array $opt = ['force|f' => FALSE]) : void {
     if (!$this->backupCurrentBranch($opt['force'])) {
       return;
     }

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-use Robo\Exception\TaskException;
 use Robo\Robo;
 use const JSON_PRETTY_PRINT;
 use function getenv;

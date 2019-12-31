@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-use Robo\Exception\TaskException;
 use Robo\Robo;
+use Robo\Task\Vcs\GitStack;
 use function date;
 use function implode;
 use function shell_exec;
@@ -35,15 +35,20 @@ class UpdateCommands extends BaseCommands {
     'branch|b' => 'master',
     'db|d' => FALSE,
     'files|f' => FALSE,
-  ]
-    ) : void {
+  ]) : void {
     if ($this->pshConfig->isValidPlatform()) {
       die('Sorry, only works in local Environment.');
     }
 
     $activeStash = FALSE;
     $app_dir     = $this->fileSystemHelper->getRootDir();
-    $git         = $this->taskGitStack()
+    $gitStack    = $this->taskGitStack();
+
+    if (!$gitStack instanceof GitStack) {
+      return;
+    }
+
+    $gitStack
       ->stopOnFail()
       ->dir($app_dir);
     // To capture cli output, use php native commands.
@@ -59,14 +64,14 @@ class UpdateCommands extends BaseCommands {
 
       if ($overwrite === "" || strtolower($overwrite) !== 'n') {
         $activeStash = TRUE;
-        $git->exec('stash');
+        $gitStack->exec('stash');
       }
 
-      $git->exec('reset --hard');
+      $gitStack->exec('reset --hard');
     }
 
     // Checkout target.
-    $result = $git->checkout($opt['branch'])->run();
+    $result = $gitStack->checkout($opt['branch'])->run();
 
     if ($result->wasCancelled()) {
       return;
@@ -87,7 +92,7 @@ class UpdateCommands extends BaseCommands {
     }
 
     $this->yell('🤔 Trying to apply Git Stash, now. This may hurt...', 50, 'default');
-    $this->taskGitStack()
+    $gitStack
       ->stopOnFail()
       ->dir($app_dir)
       ->exec('stash pop')
@@ -134,7 +139,14 @@ class UpdateCommands extends BaseCommands {
       ->exec(sprintf('%s -y config-import', $this->drushAlias))
       ->run();
     $this->yell('Go back initital Git branch', 50, 'default');
-    $this->taskGitStack()
+
+    $gitStack = $this->taskGitStack();
+
+    if (!$gitStack instanceof GitStack) {
+      return;
+    }
+
+    $gitStack
       ->stopOnFail()
       ->dir($app_dir)
       ->checkout($currentBranch)

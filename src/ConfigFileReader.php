@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt;
 
-use Robo\Config\Config as RoboConfig;
+use Consolidation\Config\ConfigInterface;
 use Robo\Robo;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use function array_filter;
@@ -19,7 +19,7 @@ use function reset;
 class ConfigFileReader {
 
   /**
-   * @var \Robo\Config\Config
+   * @var \Consolidation\Config\ConfigInterface
    */
   protected $roboConfig;
 
@@ -43,7 +43,7 @@ class ConfigFileReader {
   /**
    * Get merged yml config.
    */
-  public function createRoboConfig(): RoboConfig {
+  public function createRoboConfig(): ConfigInterface {
     return Robo::createConfiguration(
       [
         self::VENDOR_DIST_ROBO_FILE_PATH,
@@ -53,7 +53,7 @@ class ConfigFileReader {
     );
   }
 
-  public function getRoboConfig(): RoboConfig {
+  public function getRoboConfig(): ConfigInterface {
     return $this->roboConfig;
   }
 

@@ -7,7 +7,6 @@ namespace wearewondrous\PshToolbelt;
 use Drupal;
 use Drupal\Component\Assertion\Handle;
 use Platformsh\ConfigReader\Config as PlatformshConfig;
-use Robo\Config\Config as RoboConfig;
 use const ASSERT_ACTIVE;
 use const E_ALL;
 use function array_merge;
@@ -47,7 +46,7 @@ class SiteSettings {
   protected $configDirectories;
 
   /**
-   * @var \Robo\Config\Config*/
+   * @var \Consolidation\Config\ConfigInterface*/
   protected $roboConfig;
 
   /**
@@ -202,7 +201,7 @@ class SiteSettings {
       return;
     }
 
-    if (!$this->roboConfig->get('solr_relationships')) {
+    if (count($this->roboConfig->get('solr_relationships')) === 0) {
       return;
     }
 

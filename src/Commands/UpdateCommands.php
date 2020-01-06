@@ -62,7 +62,7 @@ class UpdateCommands extends BaseCommands {
     if ($workspaceChanges !== NULL) {
       $overwrite = $this->ask('There are changes in your local. Stash them? [Y/n]');
 
-      if ($overwrite === "" || strtolower($overwrite) !== 'n') {
+      if (!$overwrite || strtolower($overwrite) !== 'n') {
         $activeStash = TRUE;
         $gitStack->exec('stash');
       }

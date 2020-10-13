@@ -92,6 +92,34 @@ class SiteSettings {
     return NULL;
   }
 
+
+  protected function getLocalConfig(string $variableName) {
+    if ($local = $this->roboConfig->get('local_dev.' . $variableName)) {
+      return $local;
+    }
+
+    if ($dupalVm = $this->roboConfig->get('drupal_vm.' . $variableName)) {
+      return $dupalVm;
+    }
+
+    return NULL;
+  }
+
+  /*
+   * Deside if in drupal vm or lando environment
+   */
+  protected function isLocalDevelopment(): bool {
+    if ($PLATFORM_ENVIRONMENT = $this->getEnv('PLATFORM_ENVIRONMENT')) {
+      return $PLATFORM_ENVIRONMENT === 'lando';
+    }
+
+    if ($USER = $this->getEnv('USER')) {
+      return $USER === 'vagrant';
+    }
+
+    return false;
+  }
+
   /**
    * Primary function to set Drupal 8 config, depending on environment.
    */
@@ -119,11 +147,11 @@ class SiteSettings {
     $this->setConfigSplit();
     $this->setSolr();
 
-    if ($this->shouldUseRedis()) {
+    if ($this->useRedis()) {
       $this->setRedisSettings();
     }
 
-    if ($this->shouldUseDevelopmentSettings()) {
+    if ($this->useDevelopmentSettings()) {
       $this->setDevSettings();
     }
   }
@@ -134,14 +162,28 @@ class SiteSettings {
   private function setTrustedHostPatterns() : void {
     $pshHost = $this->roboConfig->get('platform.host');
     $pshDomain = $this->roboConfig->get('platform.domain');
-    $localHost = $this->roboConfig->get('drupal_vm.host');
+    $localHost = $this->getLocalConfig('host');
 
     if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
     }
 
-    if ($pshHost !== NULL && $pshDomain !== NULL) {
+    if ($this->isLocalDevelopment() && $localHost !== NULL) {
+      $devIdentifier = preg_quote($localHost);
+      $devPattern = [
+        sprintf('^%s', $devIdentifier),
+        sprintf('^www\.%s', $devIdentifier),
+      ];
 
+      $this->settings['trusted_host_patterns'] = array_merge(
+        $this->settings['trusted_host_patterns'],
+        $devPattern
+      );
+
+      return;
+    }
+
+    if ($pshHost !== NULL && $pshDomain !== NULL) {
       $platformshHost = preg_quote($pshHost);
       $platformPattern = [
         sprintf('^%s', $platformshHost),
@@ -156,23 +198,6 @@ class SiteSettings {
         $platformPattern,
         $prodPattern
       );
-
-      if ($this->pshConfig->inRuntime()) {
-        return;
-      }
-    }
-
-    if ($localHost !== NULL) {
-      $devIdentifier = preg_quote($localHost);
-      $devPattern = [
-        sprintf('^%s', $devIdentifier),
-        sprintf('^www\.%s', $devIdentifier),
-      ];
-
-      $this->settings['trusted_host_patterns'] = array_merge(
-        $this->settings['trusted_host_patterns'],
-        $devPattern
-      );
     }
   }
 
@@ -181,13 +206,14 @@ class SiteSettings {
    */
   private function setConfigSplit() : void {
     $configSplit = $this->configFileReader->getConfigSplitFromRoboConfig();
-    // Activate development split.
-    $this->config[$configSplit['prod']['machine_name']]['status'] = FALSE;
-    $this->config[$configSplit['dev']['machine_name']]['status'] = TRUE;
 
-    if (!$this->pshConfig->isValidPlatform()) {
+    if ($this->isLocalDevelopment()) {
+      $this->config[$configSplit['prod']['machine_name']]['status'] = FALSE;
+      $this->config[$configSplit['dev']['machine_name']]['status'] = TRUE;
+
       return;
     }
+
     // Enable production config split.
     $this->config[$configSplit['prod']['machine_name']]['status'] = TRUE;
     $this->config[$configSplit['dev']['machine_name']]['status'] = FALSE;
@@ -197,6 +223,7 @@ class SiteSettings {
    * Solr config for production if enabled.
    */
   public function setSolr() : void {
+    // @todo: does this need a dev env check?
     if (!$this->pshConfig->inRuntime()) {
       return;
     }
@@ -232,10 +259,17 @@ class SiteSettings {
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/example.services.yml';
     $this->settings['container_yamls'][] = DRUPAL_ROOT . '/modules/contrib/redis/redis.services.yml';
 
-    if ($this->shouldUseProductionSettings()) {
-      $redis = $this->pshConfig->credentials('redis');
-      $this->settings['redis.connection']['host'] = $redis['host'];
-      $this->settings['redis.connection']['port'] = $redis['port'];
+    try {
+      if ($redis = $this->pshConfig->credentials('redis')) {
+        $this->settings['redis.connection']['host'] = $redis['host'];
+        $this->settings['redis.connection']['port'] = $redis['port'];
+      }
+    } catch (\RuntimeException $exception) {
+      // todo update config file
+      if ($this->useRedis()) {
+        $this->settings['redis.connection']['interface'] = 'PhpRedis';
+        $this->settings['redis.connection']['host']      = '127.0.0.1';
+      }
     }
 
     $this->settings['cache_prefix'] = 'drupal';
@@ -287,12 +321,7 @@ class SiteSettings {
     // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
 
-    if ($this->shouldUseRedis()) {
-      $this->settings['redis.connection']['interface'] = 'PhpRedis';
-      $this->settings['redis.connection']['host']      = '127.0.0.1';
-    }
-
-    if ($this->shouldDisableCache()) {
+    if ($this->isCacheDisabled()) {
       // Disable frontend preprocesing.
       $this->config['system.performance']['css']['preprocess'] = FALSE;
       $this->config['system.performance']['js']['preprocess'] = FALSE;
@@ -311,30 +340,31 @@ class SiteSettings {
 
     // Database settings.
     $this->databases['default']['default'] = [
-      'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
+      'database' => $this->getLocalConfig('mysql.database'),
       'driver' => 'mysql',
-      'host' => $this->roboConfig->get('drupal_vm.mysql.hostname'),
+      'host' => $this->getLocalConfig('mysql.hostname'),
       'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-      'password' => $this->roboConfig->get('drupal_vm.mysql.password'),
-      'port' => $this->roboConfig->get('drupal_vm.mysql.port'),
+      'password' => $this->getLocalConfig('mysql.password'),
+      'port' => $this->getLocalConfig('mysql.port'),
       'prefix' => '',
-      'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
+      'username' => $this->getLocalConfig('mysql.user'),
     ];
   }
 
   private function getCurrentEnvironment() : string {
-    if (!$this->pshConfig->isValidPlatform()) {
+    if ($this->isLocalDevelopment()) {
       return self::LOCAL_IDENTIFIER;
     }
 
-    if ($this->pshConfig->branch === 'master') {
+    if ($this->pshConfig->branch === 'master' || $this->pshConfig->branch === 'main') {
       return self::PROD_IDENTIFIER;
     }
 
     return self::DEV_IDENTIFIER;
   }
 
-  private function shouldUseRedis() : bool {
+  // todo refactor
+  private function useRedis() : bool {
     $currentEnvironment = $this->getCurrentEnvironment();
     $redisSettings = $this->roboConfig->get('redis.' . $currentEnvironment);
 
@@ -346,16 +376,16 @@ class SiteSettings {
     return $redisSettings === TRUE;
   }
 
-  private function shouldUseProductionSettings() : bool {
+  private function useProductionSettings() : bool {
     return $this->getCurrentEnvironment() !== self::LOCAL_IDENTIFIER;
   }
 
-  private function shouldUseDevelopmentSettings() : bool {
+  private function useDevelopmentSettings() : bool {
     return $this->getCurrentEnvironment() === self::LOCAL_IDENTIFIER;
   }
 
-  private function shouldDisableCache() : bool {
-    $disableCache = $this->roboConfig->get('drupal_vm.disable_cache');
+  private function isCacheDisabled() : bool {
+    $disableCache = $this->getLocalConfig('disable_cache');
 
     if ($disableCache === NULL) {
       return TRUE;

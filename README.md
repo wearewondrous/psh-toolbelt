@@ -6,7 +6,12 @@
 Make the Drupal 8 installation highly configurable using:
 
 - Robo
-- Environment Variables 
+- Environment Variables
+
+## IMPORTANT NOTICE
+
+The key `drupal_vm` has been deprecated! Use `local_dev` instead. Thus DrupalVM and Lando can be supported.
+All config will stay the same.
 
 ## Todos
 
@@ -152,7 +157,7 @@ Optionally, to backup a branch that is not `master`, add this to the platform.sh
 env:BACKUP_THIS_BRANCH=1
 ```
 
-Note: optionally, the variables can live as [actual environment variables](https://docs.platform.sh/development/variables.html#top-level-environment-variables) or as [Platform.sh variables](https://docs.platform.sh/development/variables.html#environment-variables). 
+Note: optionally, the variables can live as [actual environment variables](https://docs.platform.sh/development/variables.html#top-level-environment-variables) or as [Platform.sh variables](https://docs.platform.sh/development/variables.html#environment-variables).
 
 ### `composer.json` and `.env` (optional)
 
@@ -188,7 +193,7 @@ SENTRY_DSN=
 
 ### Troubleshooting
 
-Make sure to have the following mounts in your `platform.app.yaml`. 
+Make sure to have the following mounts in your `platform.app.yaml`.
 Otherwise you will run in errors on the server, like `Could not create directory '/app/.ssh'.`
 
 ```yaml

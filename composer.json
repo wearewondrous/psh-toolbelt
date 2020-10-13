@@ -10,7 +10,8 @@
     "keywords": [
         "platform.sh",
         "drupal-8",
-        "drupal_vm"
+        "drupal_vm",
+        "lando"
     ],
     "autoload": {
         "psr-4": {

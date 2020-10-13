@@ -54,9 +54,19 @@ solr_relationships:
 #    core: extraindex
 #    machine_name: extraindex
 
-drupal_vm:
+# drupal_vm:
+#   disable_cache: true
+#   host: my-website.vagrant
+#   mysql:
+#     database: drupal
+#     hostname: 127.0.0.1
+#     password: drupal
+#     port: 3306
+#     user: drupal
+
+local_dev:
   disable_cache: true
-  host: my-website.wndrs
+  host: my-website.lndo.site
   mysql:
     database: drupal
     hostname: 127.0.0.1

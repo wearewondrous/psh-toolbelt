@@ -9,7 +9,6 @@ jobs:
       - uses: actions/checkout@v2
       - uses: php-actions/composer@v1 # or alternative dependency management
         with:
-          suggest: yes
           args: --profile --ignore-platform-reqs
       - name: PHPUnit tests
         uses: php-actions/phpunit@v9

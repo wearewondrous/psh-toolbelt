@@ -294,11 +294,11 @@ class BackupCommands extends BaseCommands {
       $drushPath = Robo::config()->get('drush.path');
       $this->_exec(sprintf('%s sql:dump | gzip > %s', $drushPath, $pathToFile));
 
-      $this->$multipartUploader = new MultipartUploader($this->s3Client, fopen($pathToFile, 'r'), [
+      $this->multipartUploader = new MultipartUploader($this->s3Client, fopen($pathToFile, 'r'), [
         'bucket' => Robo::config()->get('storage.s3.upload_bucket'),
         'key'    => $objectKey,
       ]);
-      $this->$multipartUploader->upload();
+      $this->multipartUploader->upload();
 
       unlink($pathToFile);
       $this->sentryClient->captureMessage(
@@ -363,11 +363,11 @@ class BackupCommands extends BaseCommands {
         // Pipe to gzip, otherwise error on platform.sh: "tar: z: Cannot open: Read-only file system".
         $this->_exec(sprintf('tar %s -c %s | gzip > %s', $excludes, $directory, $targetFile));
         
-        $this->$multipartUploader = new MultipartUploader($this->s3Client, fopen($targetFile, 'r'), [
+        $this->multipartUploader = new MultipartUploader($this->s3Client, fopen($targetFile, 'r'), [
           'bucket' => Robo::config()->get('storage.s3.upload_bucket'),
           'key'    => $objectKey,
         ]);
-        $this->$multipartUploader->upload();
+        $this->multipartUploader->upload();
 
         unlink($targetFile);
         $this->sentryClient->captureMessage(

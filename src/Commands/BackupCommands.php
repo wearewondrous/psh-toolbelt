@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:disable Drupal.Classes.UseGlobalClass.RedundantUseStatement
-
 declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
@@ -364,7 +362,7 @@ class BackupCommands extends BaseCommands {
         // Tar: excludes first, create tar.
         // Pipe to gzip, otherwise error on platform.sh: "tar: z: Cannot open: Read-only file system".
         $this->_exec(sprintf('tar %s -c %s | gzip > %s', $excludes, $directory, $targetFile));
-
+        
         $this->multipartUploader = new MultipartUploader($this->s3Client, fopen($targetFile, 'r'), [
           'bucket' => Robo::config()->get('storage.s3.upload_bucket'),
           'key'    => $objectKey,

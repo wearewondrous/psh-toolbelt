@@ -1,7 +1,5 @@
 <?php
 
-// phpcs:disable Drupal.Classes.UseGlobalClass.RedundantUseStatement
-
 declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt;

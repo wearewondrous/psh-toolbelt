@@ -6,10 +6,10 @@ namespace wearewondrous\PshToolbelt\Commands;
 
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
-use Exception;
-use Raven_Client;
+use \Exception;
+use \Raven_Client;
 use Robo\Robo;
-use Throwable;
+use \Throwable;
 use function array_pop;
 use function closedir;
 use function date;
@@ -362,7 +362,6 @@ class BackupCommands extends BaseCommands {
         // Tar: excludes first, create tar.
         // Pipe to gzip, otherwise error on platform.sh: "tar: z: Cannot open: Read-only file system".
         $this->_exec(sprintf('tar %s -c %s | gzip > %s', $excludes, $directory, $targetFile));
-        
         $this->multipartUploader = new MultipartUploader($this->s3Client, fopen($targetFile, 'r'), [
           'bucket' => Robo::config()->get('storage.s3.upload_bucket'),
           'key'    => $objectKey,

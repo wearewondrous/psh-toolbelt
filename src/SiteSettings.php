@@ -4,11 +4,8 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt;
 
-use Drupal;
 use Drupal\Component\Assertion\Handle;
 use Platformsh\ConfigReader\Config as PlatformshConfig;
-use const ASSERT_ACTIVE;
-use const E_ALL;
 use function array_merge;
 use function assert_options;
 use function error_reporting;
@@ -275,14 +272,14 @@ class SiteSettings {
    */
   public function setDevSettings() : void {
     // Error logging.
-    error_reporting(E_ALL);
+    error_reporting(\E_ALL);
     ini_set('display_errors', 'On');
     ini_set('display_startup_errors', 'On');
     // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
     $this->settings['file_temp_path'] = '/tmp';
 
-    assert_options(ASSERT_ACTIVE, TRUE);
+    assert_options(\ASSERT_ACTIVE, TRUE);
     Handle::register();
     // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
@@ -303,7 +300,7 @@ class SiteSettings {
       $this->settings['cache']['bins']['page']               = 'cache.backend.null';
     }
 
-    $this->settings['deployment_identifier']          = Drupal::VERSION;
+    $this->settings['deployment_identifier']          = \Drupal::VERSION;
     $this->settings['extension_discovery_scan_tests'] = FALSE;
     $this->settings['rebuild_access']                 = TRUE;
     $this->settings['skip_permissions_hardening']     = TRUE;

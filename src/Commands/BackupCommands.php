@@ -6,10 +6,7 @@ namespace wearewondrous\PshToolbelt\Commands;
 
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
-use Exception;
-use Raven_Client;
 use Robo\Robo;
-use Throwable;
 use function array_pop;
 use function closedir;
 use function date;
@@ -69,7 +66,7 @@ class BackupCommands extends BaseCommands {
     try {
       $this->validateEnvVars();
     }
-    catch (Throwable $e) {
+    catch (\Throwable $e) {
       die('Not all required environment variables defined' . $e);
     }
 
@@ -80,7 +77,7 @@ class BackupCommands extends BaseCommands {
             $this->pshConfig->project . self::FILE_DELIMITER,
           ]
       );
-    $this->sentryClient  = new Raven_Client($this->getEnv('SENTRY_DSN'));
+    $this->sentryClient  = new \Raven_Client($this->getEnv('SENTRY_DSN'));
     $this->s3Client      = new S3Client(
           [
             'version' => Robo::config()->get('storage.s3.version'),
@@ -138,7 +135,7 @@ class BackupCommands extends BaseCommands {
 
     foreach ($variables as $variable) {
       if ($this->getEnv($variable) === NULL) {
-        throw new Exception(sprintf('Environment variable %s missing', $variable));
+        throw new \Exception(sprintf('Environment variable %s missing', $variable));
       }
     }
   }
@@ -307,7 +304,7 @@ class BackupCommands extends BaseCommands {
             ['level' => 'info']
         );
     }
-    catch (Throwable $e) {
+    catch (\Throwable $e) {
       $this->sentryClient->captureMessage(
             'Database backup: ' . $e->getMessage(),
             [],
@@ -362,7 +359,7 @@ class BackupCommands extends BaseCommands {
         // Tar: excludes first, create tar.
         // Pipe to gzip, otherwise error on platform.sh: "tar: z: Cannot open: Read-only file system".
         $this->_exec(sprintf('tar %s -c %s | gzip > %s', $excludes, $directory, $targetFile));
-        
+
         $this->multipartUploader = new MultipartUploader($this->s3Client, fopen($targetFile, 'r'), [
           'bucket' => Robo::config()->get('storage.s3.upload_bucket'),
           'key'    => $objectKey,
@@ -377,7 +374,7 @@ class BackupCommands extends BaseCommands {
           );
       }
     }
-    catch (Throwable $e) {
+    catch (\Throwable $e) {
       $this->sentryClient->captureMessage(
             'Files backup: ' . $e->getMessage(),
             [],

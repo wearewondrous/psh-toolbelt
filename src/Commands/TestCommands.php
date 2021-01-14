@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace wearewondrous\PshToolbelt\Commands;
 
 use Robo\Robo;
-use const JSON_PRETTY_PRINT;
 use function getenv;
 use function json_encode;
 use function print_r;
@@ -22,9 +21,9 @@ class TestCommands extends BaseCommands {
    */
   public function testVars() : void {
     $this->say('=== Env vars =============================');
-    print_r(json_encode(getenv(), JSON_PRETTY_PRINT) . "\n");
+    print_r(json_encode(getenv(), \JSON_PRETTY_PRINT) . "\n");
     $this->say('=== Robo vars ============================');
-    print_r(json_encode(Robo::config()->export(), JSON_PRETTY_PRINT) . "\n");
+    print_r(json_encode(Robo::config()->export(), \JSON_PRETTY_PRINT) . "\n");
   }
 
   /**

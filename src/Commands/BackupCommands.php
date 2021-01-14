@@ -45,7 +45,7 @@ class BackupCommands extends BaseCommands {
   private $projectPrefix;
 
   /**
-   * @var Aws\S3\MultipartUploader
+   * @var \Aws\S3\MultipartUploader
    */
   private $multipartUploader;
 

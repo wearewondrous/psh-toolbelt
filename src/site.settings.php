@@ -40,9 +40,7 @@ if (PHP_SAPI === 'cli') {
     foreach ($args as $arg) {
       if ($arg === 'config:export' || $arg === 'cex' || $arg === 'config-export') {
         $configSplit = $configFileReader->getConfigSplitFromRoboConfig();
-
-        //$config_directories[CONFIG_SYNC_DIRECTORY]              = $configSplit['default']['folder'];
-        $settings['config_sync_directory']                      = $configSplit['default']['folder'];
+        $settings['config_sync_directory'] = $configSplit['default']['folder'];
         $config[$configSplit['prod']['machine_name']]['folder'] = $configSplit['prod']['folder'];
 
         break;

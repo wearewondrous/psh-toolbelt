@@ -95,7 +95,7 @@ class SiteSettings {
   public function setDefaults() : void {
     $this->settings['trusted_host_patterns']        = [];
     $this->settings['update_free_access']           = FALSE;
-    $this->configDirectories[CONFIG_SYNC_DIRECTORY] = implode(
+    $this->settings['config_sync_directory']        = implode(
       '/',
       [
         '..',

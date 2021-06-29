@@ -297,7 +297,6 @@ class BackupCommands extends BaseCommands {
       ]);
       $this->multipartUploader->upload();
 
-      unlink($pathToFile);
       $this->sentryClient->captureMessage(
             'DB backed up in: ' . $objectKey,
             [],
@@ -310,6 +309,20 @@ class BackupCommands extends BaseCommands {
             [],
             ['level' => 'error']
             );
+    }
+    finally {
+      $fileDeleted = unlink($pathToFile);
+      
+      if($fileDeleted !== FALSE) {
+        $this->sentryClient->captureMessage("Successfully purged db backup temp file: " . $pathToFile, [], [
+          'level' => 'info',
+        ]);
+      }
+      else {
+        $this->sentryClient->captureMessage("Could not purge db backup temp file: " . $pathToFile, [], [
+          'level' => 'error',
+        ]);
+      }
     }
   }
 
@@ -366,7 +379,6 @@ class BackupCommands extends BaseCommands {
         ]);
         $this->multipartUploader->upload();
 
-        unlink($targetFile);
         $this->sentryClient->captureMessage(
               sprintf('%s-files backed up in: ', $key) . $objectKey,
               [],
@@ -380,6 +392,20 @@ class BackupCommands extends BaseCommands {
             [],
             ['level' => 'error']
             );
+    }
+    finally {
+      $fileDeleted = unlink($targetFile);
+      
+      if($fileDeleted !== FALSE) {
+        $this->sentryClient->captureMessage("Successfully purged archieved temp file: " . $targetFile, [], [
+          'level' => 'info',
+        ]);
+      }
+      else {
+        $this->sentryClient->captureMessage("Could not purge archieved temp file: " . $targetFile, [], [
+          'level' => 'error',
+        ]);
+      }
     }
   }
 

@@ -314,11 +314,15 @@ class BackupCommands extends BaseCommands {
       $fileDeleted = unlink($pathToFile);
       
       if($fileDeleted !== FALSE) {
+        var_dump($pathToFile);
+        var_dump("Path To File File Deleted");
         $this->sentryClient->captureMessage("Successfully purged db backup temp file: " . $pathToFile, [], [
           'level' => 'info',
         ]);
       }
       else {
+        var_dump($pathToFile);
+        var_dump("Path To File File not Deleted");
         $this->sentryClient->captureMessage("Could not purge db backup temp file: " . $pathToFile, [], [
           'level' => 'error',
         ]);
@@ -397,11 +401,15 @@ class BackupCommands extends BaseCommands {
       $fileDeleted = unlink($targetFile);
       
       if($fileDeleted !== FALSE) {
+        var_dump($targetFile);
+        var_dump(" File Deleted");
         $this->sentryClient->captureMessage("Successfully purged archieved temp file: " . $targetFile, [], [
           'level' => 'info',
         ]);
       }
       else {
+        var_dump($targetFile);
+        var_dump(" File not Deleted");
         $this->sentryClient->captureMessage("Could not purge archieved temp file: " . $targetFile, [], [
           'level' => 'error',
         ]);

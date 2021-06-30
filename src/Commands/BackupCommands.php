@@ -348,8 +348,8 @@ class BackupCommands extends BaseCommands {
           ]
       );
 
-    try {
-      foreach ($paths as $key => $path) {
+    foreach ($paths as $key => $path) {
+      try {
         $objectKey = sprintf($objectKeyTemplate, $key);
         $targetFile = implode(
               '/',
@@ -389,30 +389,30 @@ class BackupCommands extends BaseCommands {
               ['level' => 'info']
           );
       }
-    }
-    catch (\Throwable $e) {
-      $this->sentryClient->captureMessage(
-            'Files backup: ' . $e->getMessage(),
-            [],
-            ['level' => 'error']
-            );
-    }
-    finally {
-      $fileDeleted = unlink($targetFile);
-      
-      if($fileDeleted !== FALSE) {
-        var_dump($targetFile);
-        var_dump(" File Deleted");
-        $this->sentryClient->captureMessage("Successfully purged archieved temp file: " . $targetFile, [], [
-          'level' => 'info',
-        ]);
+      catch (\Throwable $e) {
+        $this->sentryClient->captureMessage(
+              'Files backup: ' . $e->getMessage(),
+              [],
+              ['level' => 'error']
+              );
       }
-      else {
-        var_dump($targetFile);
-        var_dump(" File not Deleted");
-        $this->sentryClient->captureMessage("Could not purge archieved temp file: " . $targetFile, [], [
-          'level' => 'error',
-        ]);
+      finally {
+        $fileDeleted = unlink($targetFile);
+        
+        if($fileDeleted !== FALSE) {
+          var_dump($targetFile);
+          var_dump(" File Deleted");
+          $this->sentryClient->captureMessage("Successfully purged archieved temp file: " . $targetFile, [], [
+            'level' => 'info',
+          ]);
+        }
+        else {
+          var_dump($targetFile);
+          var_dump(" File not Deleted");
+          $this->sentryClient->captureMessage("Could not purge archieved temp file: " . $targetFile, [], [
+            'level' => 'error',
+          ]);
+        }
       }
     }
   }

@@ -297,7 +297,6 @@ class BackupCommands extends BaseCommands {
       ]);
       $this->multipartUploader->upload();
 
-      unlink($pathToFile);
       $this->sentryClient->captureMessage(
             'DB backed up in: ' . $objectKey,
             [],
@@ -310,6 +309,20 @@ class BackupCommands extends BaseCommands {
             [],
             ['level' => 'error']
             );
+    }
+    finally {
+      $fileDeleted = unlink($pathToFile);
+      
+      if($fileDeleted !== FALSE) {
+        $this->sentryClient->captureMessage("Successfully purged temp file: " . $pathToFile, [], [
+          'level' => 'info',
+        ]);
+      }
+      else {
+        $this->sentryClient->captureMessage("Could not purge temp file: " . $pathToFile, [], [
+          'level' => 'error',
+        ]);
+      }
     }
   }
 
@@ -331,8 +344,8 @@ class BackupCommands extends BaseCommands {
           ]
       );
 
-    try {
-      foreach ($paths as $key => $path) {
+    foreach ($paths as $key => $path) {
+      try {
         $objectKey = sprintf($objectKeyTemplate, $key);
         $targetFile = implode(
               '/',
@@ -366,20 +379,33 @@ class BackupCommands extends BaseCommands {
         ]);
         $this->multipartUploader->upload();
 
-        unlink($targetFile);
         $this->sentryClient->captureMessage(
               sprintf('%s-files backed up in: ', $key) . $objectKey,
               [],
               ['level' => 'info']
           );
       }
-    }
-    catch (\Throwable $e) {
-      $this->sentryClient->captureMessage(
-            'Files backup: ' . $e->getMessage(),
-            [],
-            ['level' => 'error']
-            );
+      catch (\Throwable $e) {
+        $this->sentryClient->captureMessage(
+              'Files backup: ' . $e->getMessage(),
+              [],
+              ['level' => 'error']
+              );
+      }
+      finally {
+        $fileDeleted = unlink($targetFile);
+        
+        if($fileDeleted !== FALSE) {
+          $this->sentryClient->captureMessage("Successfully purged temp file: " . $targetFile, [], [
+            'level' => 'info',
+          ]);
+        }
+        else {
+          $this->sentryClient->captureMessage("Could not purge temp file: " . $targetFile, [], [
+            'level' => 'error',
+          ]);
+        }
+      }
     }
   }
 

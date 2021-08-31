@@ -30,7 +30,7 @@
     },
     "bin":["psh-toolbelt"],
     "require": {
-        "php": ">=8.0",
+        "php": ">=7.4",
         "ext-json": "*",
         "ext-pdo": "*",
         "aws/aws-sdk-php": "^3.91",

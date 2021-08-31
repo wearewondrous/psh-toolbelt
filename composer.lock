@@ -9032,7 +9032,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.0",
+        "php": ">=7.4",
         "ext-json": "*",
         "ext-pdo": "*"
     },

@@ -30,7 +30,7 @@ use function unlink;
  */
 class BackupCommands extends BaseCommands {
   /**
-   * @var \Raven_Client
+   * @var \Raven\Client
    */
   private $sentryClient;
 
@@ -77,7 +77,7 @@ class BackupCommands extends BaseCommands {
             $this->pshConfig->project . self::FILE_DELIMITER,
           ]
       );
-    $this->sentryClient  = new \Raven_Client($this->getEnv('SENTRY_DSN'));
+    $this->sentryClient  = new \Raven\Client($this->getEnv('SENTRY_DSN'));
     $this->s3Client      = new S3Client(
           [
             'version' => Robo::config()->get('storage.s3.version'),

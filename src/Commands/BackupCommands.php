@@ -22,6 +22,7 @@ use function strtotime;
 use function time;
 use function trim;
 use function unlink;
+use Sentry\Severity;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -79,9 +80,7 @@ class BackupCommands extends BaseCommands {
       );
     // $this->sentryClient  = new \Raven\Client($this->getEnv('SENTRY_DSN'));
     \Sentry\init(['dsn' => $this->getEnv('SENTRY_DSN')]);
-    \Sentry\captureMessage('Testing if sentry sdk is working',
-    [],
-    ['level' => 'error']);
+    \Sentry\captureMessage('Testing if sentry sdk is working', Severity::error());
 
     $this->s3Client      = new S3Client(
           [
@@ -104,10 +103,8 @@ class BackupCommands extends BaseCommands {
    * @option $force Ignore config and force uploading the current environment
    */
   public function backupBranch(array $opt = ['force|f' => FALSE]) : void {
-    \Sentry\captureMessage('Testing if sentry sdk is working',
-    [],
-    ['level' => 'error']);
-    
+    \Sentry\captureMessage('Testing if sentry sdk is working', Severity::error());
+
     if (!$this->backupCurrentBranch($opt['force'])) {
       return;
     }

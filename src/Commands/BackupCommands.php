@@ -74,7 +74,6 @@ class BackupCommands extends BaseCommands {
           ]
       );
     \Sentry\init(['dsn' => $this->getEnv('SENTRY_DSN')]);
-    \Sentry\captureMessage('Testing if sentry sdk is working', Severity::error());
 
     $this->s3Client      = new S3Client(
           [
@@ -97,8 +96,6 @@ class BackupCommands extends BaseCommands {
    * @option $force Ignore config and force uploading the current environment
    */
   public function backupBranch(array $opt = ['force|f' => FALSE]) : void {
-    \Sentry\captureMessage('Testing if sentry sdk is working', Severity::error());
-
     if (!$this->backupCurrentBranch($opt['force'])) {
       return;
     }

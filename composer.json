@@ -1,6 +1,6 @@
 {
     "name": "wearewondrous/psh-toolbelt",
-    "description": "Platform sh tools for a Drupal 9 and php@7.4.",
+    "description": "Platform sh tools for a Drupal 9 and php 7.4.",
     "authors": [
         {
             "name": "WONDROUS LTD",
@@ -11,7 +11,7 @@
         "platform.sh",
         "drupal-9",
         "drupal_vm",
-        "php@7.4"
+        "php 7.4"
     ],
     "autoload": {
         "psr-4": {

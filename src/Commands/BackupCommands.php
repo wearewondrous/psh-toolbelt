@@ -22,6 +22,7 @@ use function strtotime;
 use function time;
 use function trim;
 use function unlink;
+use Sentry\Severity;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -29,11 +30,6 @@ use function unlink;
  * @see http://robo.li/
  */
 class BackupCommands extends BaseCommands {
-  /**
-   * @var \Raven_Client
-   */
-  private $sentryClient;
-
   /**
    * @var \Aws\S3\S3Client
    */
@@ -77,7 +73,8 @@ class BackupCommands extends BaseCommands {
             $this->pshConfig->project . self::FILE_DELIMITER,
           ]
       );
-    $this->sentryClient  = new \Raven_Client($this->getEnv('SENTRY_DSN'));
+    \Sentry\init(['dsn' => $this->getEnv('SENTRY_DSN')]);
+
     $this->s3Client      = new S3Client(
           [
             'version' => Robo::config()->get('storage.s3.version'),
@@ -116,11 +113,10 @@ class BackupCommands extends BaseCommands {
     $this->archiveAndUploadFiles($prefix);
     $this->cleanupRemote();
 
-    $this->sentryClient->captureMessage(
-          sprintf('Successfully backed up: %s', $prefix),
-          [],
-          ['level' => 'info']
-      );
+    \Sentry\captureMessage(
+      sprintf('Successfully backed up: %s', $prefix),
+      Severity::info()
+    );
   }
 
   /**
@@ -199,9 +195,10 @@ class BackupCommands extends BaseCommands {
         $removedFolders[] = $dirPath;
       }
       else {
-        $this->sentryClient->captureMessage("Could not wipe folder: " . $dirPath, [], [
-          'level' => 'warning',
-        ]);
+        \Sentry\captureMessage(
+          "Could not wipe folder: " . $dirPath,
+          Severity::warning()
+        );
       }
     }
 
@@ -211,11 +208,10 @@ class BackupCommands extends BaseCommands {
       return;
     }
 
-    $this->sentryClient->captureMessage(
-          'Cleanup, folders removed: ' . implode(', ', $removedFolders),
-          [],
-          ['level' => 'info']
-      );
+    \Sentry\captureMessage(
+      'Cleanup, folders removed: ' . implode(', ', $removedFolders),
+      Severity::info()
+    );
   }
 
   private function deleteFolderRecursively(string $folder) : bool {
@@ -297,31 +293,31 @@ class BackupCommands extends BaseCommands {
       ]);
       $this->multipartUploader->upload();
 
-      $this->sentryClient->captureMessage(
-            'DB backed up in: ' . $objectKey,
-            [],
-            ['level' => 'info']
-        );
+      \Sentry\captureMessage(
+        'DB backed up in: ' . $objectKey,
+        Severity::info()
+      );
     }
     catch (\Throwable $e) {
-      $this->sentryClient->captureMessage(
-            'Database backup: ' . $e->getMessage(),
-            [],
-            ['level' => 'error']
-            );
+      \Sentry\captureMessage(
+        'Database backup: ' . $e->getMessage(),
+        Severity::error()
+      );
     }
     finally {
       $fileDeleted = unlink($pathToFile);
       
       if($fileDeleted !== FALSE) {
-        $this->sentryClient->captureMessage("Successfully purged temp file: " . $pathToFile, [], [
-          'level' => 'info',
-        ]);
+        \Sentry\captureMessage(
+          "Successfully purged temp file: " . $pathToFile,
+          Severity::info()
+        );
       }
       else {
-        $this->sentryClient->captureMessage("Could not purge temp file: " . $pathToFile, [], [
-          'level' => 'error',
-        ]);
+        \Sentry\captureMessage(
+          "Could not purge temp file: " . $pathToFile,
+          Severity::error()
+        );
       }
     }
   }
@@ -379,31 +375,31 @@ class BackupCommands extends BaseCommands {
         ]);
         $this->multipartUploader->upload();
 
-        $this->sentryClient->captureMessage(
-              sprintf('%s-files backed up in: ', $key) . $objectKey,
-              [],
-              ['level' => 'info']
-          );
+        \Sentry\captureMessage(
+          sprintf('%s-files backed up in: ', $key) . $objectKey,
+          Severity::info()
+        );
       }
       catch (\Throwable $e) {
-        $this->sentryClient->captureMessage(
-              'Files backup: ' . $e->getMessage(),
-              [],
-              ['level' => 'error']
-              );
+        \Sentry\captureMessage(
+          'Files backup: ' . $e->getMessage(),
+          Severity::error()
+        );
       }
       finally {
         $fileDeleted = unlink($targetFile);
         
         if($fileDeleted !== FALSE) {
-          $this->sentryClient->captureMessage("Successfully purged temp file: " . $targetFile, [], [
-            'level' => 'info',
-          ]);
+          \Sentry\captureMessage(
+            "Successfully purged temp file: " . $targetFile,
+            Severity::info()
+          );
         }
         else {
-          $this->sentryClient->captureMessage("Could not purge temp file: " . $targetFile, [], [
-            'level' => 'error',
-          ]);
+          \Sentry\captureMessage(
+            "Could not purge temp file: " . $targetFile,
+            Severity::error()
+          );
         }
       }
     }

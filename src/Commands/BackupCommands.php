@@ -6,6 +6,7 @@ namespace wearewondrous\PshToolbelt\Commands;
 $signal_handler = function($signal) {
   switch($signal) {
     case SIGTERM:
+      throw new Exception('From Signal Handler');
       echo "Caught SIGTERM\n";
       exit;
   }

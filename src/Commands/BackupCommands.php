@@ -3,19 +3,16 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-declare(ticks = 1) {
-  $signal_handler = function($signal) {
-    switch($signal) {
-      case SIGTERM:
-        echo "Caught SIGTERM\n";
-        exit;
-    }
-  };
+$signal_handler = function($signal) {
+  switch($signal) {
+    case SIGTERM:
+      echo "Caught SIGTERM\n";
+      exit;
+  }
+};
 
-  echo "Installing signal handler...\n";
-  pcntl_signal(SIGTERM, $signal_handler);
-  pcntl_signal(SIGINT, $signal_handler);
-}
+pcntl_signal(SIGTERM, $signal_handler);
+pcntl_signal(SIGINT, $signal_handler);
 
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
@@ -109,6 +106,7 @@ class BackupCommands extends BaseCommands {
    * @option $force Ignore config and force uploading the current environment
    */
   public function backupBranch(array $opt = ['force|f' => FALSE]) : void {
+    pcntl_signal_dispatch();
     if (!$this->backupCurrentBranch($opt['force'])) {
       return;
     }
@@ -150,6 +148,7 @@ class BackupCommands extends BaseCommands {
   }
 
   private function backupCurrentBranch(bool $forced) : bool {
+    pcntl_signal_dispatch();
     if ($forced) {
       return TRUE;
     }

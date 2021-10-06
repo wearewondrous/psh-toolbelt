@@ -7,11 +7,12 @@ declare(ticks = 1) {
   $signal_handler = function($signal) {
     switch($signal) {
       case SIGTERM:
-        print "Caught SIGTERM\n";
+        echo "Caught SIGTERM\n";
         exit;
     }
   };
 
+  echo "Installing signal handler...\n";
   pcntl_signal(SIGTERM, $signal_handler);
   pcntl_signal(SIGINT, $signal_handler);
 }

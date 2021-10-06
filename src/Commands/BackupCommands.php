@@ -1,4 +1,7 @@
 <?php
+declare(strict_types = 1);
+
+namespace wearewondrous\PshToolbelt\Commands;
 
 declare(ticks = 1) {
   pcntl_signal(SIGTERM, "signal_handler");
@@ -19,10 +22,6 @@ declare(ticks = 1) {
     }
   }
 }
-
-declare(strict_types = 1);
-
-namespace wearewondrous\PshToolbelt\Commands;
 
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;

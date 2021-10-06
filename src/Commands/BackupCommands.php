@@ -3,26 +3,6 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-declare(ticks = 1) {
-  pcntl_signal(SIGTERM, "signal_handler");
-  pcntl_signal(SIGINT, "signal_handler");
-
-
-  function signal_handler($signal) {
-    switch($signal) {
-        case SIGTERM:
-            print "Caught SIGTERM\n";
-            exit;
-        case SIGKILL:
-            print "Caught SIGKILL\n";
-            exit;
-        case SIGINT:
-            print "Caught SIGINT\n";
-            exit;
-    }
-  }
-}
-
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
 use Robo\Robo;
@@ -63,6 +43,12 @@ class BackupCommands extends BaseCommands {
    * @var \Aws\S3\MultipartUploader
    */
   private $multipartUploader;
+
+  public function __construct() {
+    declare(ticks = 1);
+    pcntl_signal(SIGTERM, "signal_handler");
+    pcntl_signal(SIGINT, "signal_handler");
+  }
 
   /**
    * Command post-initialization.
@@ -421,6 +407,14 @@ class BackupCommands extends BaseCommands {
           );
         }
       }
+    }
+  }
+
+  private function signal_handler($signal) {
+    switch($signal) {
+      case SIGTERM:
+        print "Caught SIGTERM\n";
+        exit;
     }
   }
 

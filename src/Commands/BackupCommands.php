@@ -11,8 +11,9 @@ $signal_handler = function($signal) {
   }
 };
 
+echo "Setting Signal Response...\n";
 pcntl_signal(SIGTERM, $signal_handler);
-pcntl_signal(SIGINT, $signal_handler);
+pcntl_signal(SIGINT, function($signo) {echo "Caught SIGTERM\n";});
 
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;

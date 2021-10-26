@@ -13,7 +13,7 @@ if (!isset($settings)) {
   $settings = [];
 }
 
-$settings['container_yamls'][] = '../services/default.services.yml';
+$settings['container_yamls'][] = dirname(__DIR__) . '/services/default.services.yml';
 
 // Load service overrides.
 if (file_exists($app_root . '/' . $site_path . '/services.yml')) {

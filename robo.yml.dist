@@ -58,11 +58,11 @@ drupal_vm:
   disable_cache: true
   host: my-website.wndrs
   mysql:
-    database: drupal
-    hostname: 127.0.0.1
-    password: drupal
+    database: drupal9
+    hostname: database
+    password: drupal9
     port: 3306
-    user: drupal
+    user: drupal9
 
 redis:
   local: true

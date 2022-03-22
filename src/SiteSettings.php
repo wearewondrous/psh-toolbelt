@@ -286,7 +286,7 @@ class SiteSettings {
 
     if ($this->shouldUseRedis()) {
       $this->settings['redis.connection']['interface'] = 'PhpRedis';
-      $this->settings['redis.connection']['host']      = '127.0.0.1';
+      $this->settings['redis.connection']['host']      = 'cache';
     }
 
     if ($this->shouldDisableCache()) {

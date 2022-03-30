@@ -319,10 +319,15 @@ class SiteSettings {
     $this->settings['update_free_access']             = TRUE;
 
     // Database settings.
+    if ($this->getEnv('MYSQL_HOSTNAME') !== null) {
+      $dbHostname = $this->getEnv('MYSQL_HOSTNAME');
+    }
+    $dbHostname = $this->roboConfig->get('drupal_vm.mysql.hostname');
+
     $this->databases['default']['default'] = [
       'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
       'driver' => 'mysql',
-      'host' => $this->roboConfig->get('drupal_vm.mysql.hostname'),
+      'host' => $dbHostname,
       'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
       'password' => $this->roboConfig->get('drupal_vm.mysql.password'),
       'port' => $this->roboConfig->get('drupal_vm.mysql.port'),

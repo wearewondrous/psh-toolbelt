@@ -59,7 +59,7 @@ drupal_vm:
   host: my-website.wndrs
   mysql:
     database: drupal
-    hostname: database
+    hostname: 127.0.0.1
     password: drupal
     port: 3306
     user: drupal

@@ -132,6 +132,9 @@ class SiteSettings {
     $pshHost = $this->roboConfig->get('platform.host');
     $pshDomain = $this->roboConfig->get('platform.domain');
     $localHost = $this->roboConfig->get('drupal_vm.host');
+    $landoHost = $this->roboConfig->get('lando.host');
+
+    $trustedHosts = [$localHost, $landoHost];
 
     if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
@@ -159,17 +162,19 @@ class SiteSettings {
       }
     }
 
-    if ($localHost !== NULL) {
-      $devIdentifier = preg_quote($localHost);
-      $devPattern = [
-        sprintf('^%s', $devIdentifier),
-        sprintf('^www\.%s', $devIdentifier),
-      ];
-
-      $this->settings['trusted_host_patterns'] = array_merge(
-        $this->settings['trusted_host_patterns'],
-        $devPattern
-      );
+    foreach ($trustedHosts as $host) {
+      if ($host !== NULL) {
+        $devIdentifier = preg_quote($host);
+        $devPattern = [
+          sprintf('^%s', $devIdentifier),
+          sprintf('^www\.%s', $devIdentifier),
+        ];
+  
+        $this->settings['trusted_host_patterns'] = array_merge(
+          $this->settings['trusted_host_patterns'],
+          $devPattern
+        );
+      }
     }
   }
 
@@ -278,6 +283,13 @@ class SiteSettings {
     // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
     $this->settings['file_temp_path'] = '/tmp';
+    
+    // Check if solr host name is available in ENV vars.
+    if (array_key_exists('solr', $this->roboConfig->get('solr_relationships'))) {
+      if ($this->getEnv('SOLR_HOSTNAME') !== null) {
+        $this->config['search_api.server.default']['backend_config']['connector_config']['host'] = $this->getEnv('SOLR_HOSTNAME');
+      }
+    }
 
     assert_options(\ASSERT_ACTIVE, TRUE);
     Handle::register();

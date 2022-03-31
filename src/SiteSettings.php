@@ -132,9 +132,6 @@ class SiteSettings {
     $pshHost = $this->roboConfig->get('platform.host');
     $pshDomain = $this->roboConfig->get('platform.domain');
     $localHost = $this->roboConfig->get('drupal_vm.host');
-    $landoHost = $this->roboConfig->get('lando.host');
-
-    $trustedHosts = [$localHost, $landoHost];
 
     if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
@@ -162,19 +159,17 @@ class SiteSettings {
       }
     }
 
-    foreach ($trustedHosts as $host) {
-      if ($host !== NULL) {
-        $devIdentifier = preg_quote($host);
-        $devPattern = [
-          sprintf('^%s', $devIdentifier),
-          sprintf('^www\.%s', $devIdentifier),
-        ];
-  
-        $this->settings['trusted_host_patterns'] = array_merge(
-          $this->settings['trusted_host_patterns'],
-          $devPattern
-        );
-      }
+    if ($localHost !== NULL) {
+      $devIdentifier = preg_quote($localHost);
+      $devPattern = [
+        sprintf('^%s', $devIdentifier),
+        sprintf('^www\.%s', $devIdentifier),
+      ];
+
+      $this->settings['trusted_host_patterns'] = array_merge(
+        $this->settings['trusted_host_patterns'],
+        $devPattern
+      );
     }
   }
 

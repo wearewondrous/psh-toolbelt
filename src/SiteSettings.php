@@ -293,11 +293,7 @@ class SiteSettings {
 
     if ($this->shouldUseRedis()) {
       $this->settings['redis.connection']['interface'] = 'PhpRedis';
-
-      $this->settings['redis.connection']['host']      = '127.0.0.1';
-      if ($this->getEnv('REDIS_HOSTNAME') !== null) {
-        $this->settings['redis.connection']['host']= $this->getEnv('REDIS_HOSTNAME');
-      }
+      $this->settings['redis.connection']['host'] = $this->getEnv('REDIS_HOSTNAME') ?? '127.0.0.1';
     }
 
     if ($this->shouldDisableCache()) {
@@ -318,11 +314,7 @@ class SiteSettings {
     $this->settings['update_free_access']             = TRUE;
 
     // Database settings.
-    $dbHostname = $this->roboConfig->get('drupal_vm.mysql.hostname');
-
-    if ($this->getEnv('MYSQL_HOSTNAME') !== null) {
-      $dbHostname = $this->getEnv('MYSQL_HOSTNAME');
-    }
+    $dbHostname = $this->getEnv('MYSQL_HOSTNAME') ?? $this->roboConfig->get('drupal_vm.mysql.hostname');
 
     $this->databases['default']['default'] = [
       'database' => $this->roboConfig->get('drupal_vm.mysql.database'),

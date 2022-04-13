@@ -278,13 +278,6 @@ class SiteSettings {
     // Http headers.
     $this->config['http_response_headers.response_header.strict_transport_security']['status'] = FALSE;
     $this->settings['file_temp_path'] = '/tmp';
-    
-    // Check if solr host name is available in ENV vars.
-    if (array_key_exists('solr', $this->roboConfig->get('solr_relationships'))) {
-      if ($this->getEnv('SOLR_HOSTNAME') !== null) {
-        $this->config['search_api.server.default']['backend_config']['connector_config']['host'] = $this->getEnv('SOLR_HOSTNAME');
-      }
-    }
 
     assert_options(\ASSERT_ACTIVE, TRUE);
     Handle::register();
@@ -293,7 +286,7 @@ class SiteSettings {
 
     if ($this->shouldUseRedis()) {
       $this->settings['redis.connection']['interface'] = 'PhpRedis';
-      $this->settings['redis.connection']['host'] = $this->getEnv('REDIS_HOSTNAME') ?? '127.0.0.1';
+      $this->settings['redis.connection']['host']      = 'cache';
     }
 
     if ($this->shouldDisableCache()) {
@@ -314,12 +307,10 @@ class SiteSettings {
     $this->settings['update_free_access']             = TRUE;
 
     // Database settings.
-    $dbHostname = $this->getEnv('MYSQL_HOSTNAME') ?? $this->roboConfig->get('drupal_vm.mysql.hostname');
-
     $this->databases['default']['default'] = [
       'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
       'driver' => 'mysql',
-      'host' => $dbHostname,
+      'host' => $this->roboConfig->get('drupal_vm.mysql.hostname'),
       'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
       'password' => $this->roboConfig->get('drupal_vm.mysql.password'),
       'port' => $this->roboConfig->get('drupal_vm.mysql.port'),

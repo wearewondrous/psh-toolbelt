@@ -54,9 +54,9 @@ solr_relationships:
 #    core: extraindex
 #    machine_name: extraindex
 
-drupal_vm:
+lando:
   disable_cache: true
-  host: my-website.wndrs
+  host: my-website.lndo.site
   mysql:
     database: drupal
     hostname: database

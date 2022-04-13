@@ -102,9 +102,9 @@ drush:
   alias_group: my-website
   alias: local
   path: vendor/bin/drush
-drupal_vm:
+lando:
   disable_cache: true
-  host: my-website.wndrs
+  host: my-website.lndo.site
   mysql:
     database: drupal
     hostname: 127.0.0.1
@@ -121,9 +121,9 @@ platform:
   host: eu.platform.sh
 drush:
   alias_group: drupalrocks
-drupal_vm:
+lando:
   hash_salt: 1234567890abcdefghijklmnopqlmnopqrstuvwxyz12345678
-  host: my-website.wndrs
+  host: my-website.lndo.site
 ```
 
 ### `sites/default/settings.php` (required)

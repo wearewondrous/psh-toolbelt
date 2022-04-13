@@ -10,7 +10,7 @@
     "keywords": [
         "platform.sh",
         "drupal-9",
-        "drupal_vm",
+        "lando",
         "php 7.4"
     ],
     "autoload": {

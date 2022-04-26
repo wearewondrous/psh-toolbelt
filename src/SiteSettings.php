@@ -198,7 +198,10 @@ class SiteSettings {
       return;
     }
 
-    if (count($this->roboConfig->get('solr_relationships')) === 0) {
+    if (
+      $this->roboConfig->get('solr_relationships') === NULL 
+      || count($this->roboConfig->get('solr_relationships')) === 0
+    ){
       return;
     }
 

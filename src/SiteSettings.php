@@ -131,7 +131,7 @@ class SiteSettings {
   private function setTrustedHostPatterns() : void {
     $pshHost = $this->roboConfig->get('platform.host');
     $pshDomain = $this->roboConfig->get('platform.domain');
-    $localHost = $this->roboConfig->get('drupal_vm.host');
+    $localHost = $this->roboConfig->get('lando.host');
 
     if (count($this->settings['trusted_host_patterns']) === 0) {
       $this->settings['trusted_host_patterns'] = [];
@@ -286,7 +286,7 @@ class SiteSettings {
 
     if ($this->shouldUseRedis()) {
       $this->settings['redis.connection']['interface'] = 'PhpRedis';
-      $this->settings['redis.connection']['host']      = '127.0.0.1';
+      $this->settings['redis.connection']['host']      = 'cache';
     }
 
     if ($this->shouldDisableCache()) {
@@ -308,14 +308,14 @@ class SiteSettings {
 
     // Database settings.
     $this->databases['default']['default'] = [
-      'database' => $this->roboConfig->get('drupal_vm.mysql.database'),
+      'database' => $this->roboConfig->get('lando.mysql.database'),
       'driver' => 'mysql',
-      'host' => $this->roboConfig->get('drupal_vm.mysql.hostname'),
+      'host' => $this->roboConfig->get('lando.mysql.hostname'),
       'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-      'password' => $this->roboConfig->get('drupal_vm.mysql.password'),
-      'port' => $this->roboConfig->get('drupal_vm.mysql.port'),
+      'password' => $this->roboConfig->get('lando.mysql.password'),
+      'port' => $this->roboConfig->get('lando.mysql.port'),
       'prefix' => '',
-      'username' => $this->roboConfig->get('drupal_vm.mysql.user'),
+      'username' => $this->roboConfig->get('lando.mysql.user'),
     ];
   }
 
@@ -352,7 +352,7 @@ class SiteSettings {
   }
 
   private function shouldDisableCache() : bool {
-    $disableCache = $this->roboConfig->get('drupal_vm.disable_cache');
+    $disableCache = $this->roboConfig->get('lando.disable_cache');
 
     if ($disableCache === NULL) {
       return TRUE;

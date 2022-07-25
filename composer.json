@@ -27,7 +27,12 @@
         "process-timeout": 1200,
         "prefered-install": "dist",
         "discard-changes": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "cweagans/composer-patches": true,
+            "phpstan/extension-installer": true
+        }
     },
     "bin":["psh-toolbelt"],
     "require": {

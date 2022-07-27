@@ -3,7 +3,7 @@
 
 [![Build Status](https://travis-ci.com/wearewondrous/psh-toolbelt.svg?branch=master)](https://travis-ci.com/wearewondrous/psh-toolbelt)
 
-Make the Drupal 8 installation highly configurable using:
+Make the Drupal 9 installation highly configurable using:
 
 - Robo
 - Environment Variables 
@@ -37,12 +37,12 @@ Overwrite the `sites/default/settings.php` with the given two includes.
 
 ```php
 <?php
-// Default Drupal 8 settings.
+// Default Drupal 9 settings.
 //
 // These are already explained with detailed comments in Drupal's
 // default.settings.php file.
 //
-// See https://api.drupal.org/api/drupal/sites!default!default.settings.php/8
+// See https://api.drupal.org/api/drupal/sites!default!default.settings.php/9
 // customized project settings
 include $app_root . '/../vendor/wearewondrous/psh-toolbelt/src/site.settings.php';
 // Local settings. These come last so that they can override anything.
@@ -128,7 +128,7 @@ lando:
 
 ### `sites/default/settings.php` (required)
 
-See an example for a `sites/default/settings.php`, have a look at [platformsh/template-drupal8](https://github.com/platformsh/template-drupal8/blob/master/web/sites/default/settings.php).
+See an example for a `sites/default/settings.php`, have a look at [platformsh-template/drupal9](https://github.com/platformsh-templates/drupal9/blob/master/web/sites/default/settings.php).
 Before the include of the `settings.local.php` add the following:
 
 ```php

@@ -55,7 +55,7 @@ class UpdateCommands extends BaseCommands {
     $workspaceChanges = shell_exec(sprintf('cd %s && git status --porcelain', $app_dir));
     $currentBranch    = shell_exec(sprintf('cd %s && git rev-parse --abbrev-ref HEAD', $app_dir));
 
-    if ($currentBranch === NULL) {
+    if ($currentBranch === NULL || $currentBranch === FALSE) {
       $currentBranch = 'master';
     }
 

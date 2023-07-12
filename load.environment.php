@@ -12,7 +12,7 @@ use wearewondrous\PshToolbelt\FileSystemHelper;
 try {
   $fileSystemHelper = new FileSystemHelper();
 
-  Dotenv::create($fileSystemHelper->getRootDir())->safeLoad();
+  Dotenv::createImmutable($fileSystemHelper->getRootDir())->safeLoad();
 }
 catch (Throwable $e) {
   // Suppressing exception.

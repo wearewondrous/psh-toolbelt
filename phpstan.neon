@@ -2,21 +2,21 @@ parameters:
   paths:
     - src
   level: max
-  excludes_analyse:
+  excludePaths:
     - %currentWorkingDirectory%/src/settings.platformsh.php
   ignoreErrors:
     -
-      message: '#Undefined variable: \$app_root#'
+      message: '#Variable \$app_root might not be defined.#'
       path: %currentWorkingDirectory%/src/site.settings.php
     -
-      message: '#Undefined variable: \$site_path#'
+      message: '#Variable \$site_path might not be defined.#'
       path: %currentWorkingDirectory%/src/site.settings.php
-    -
-      message: '#Constant DRUPAL_ROOT not found.#'
-      path: %currentWorkingDirectory%/src/SiteSettings.php
     -
       message: '#Call to an undefined method [a-zA-Z0-9\\_]+::replace\(\).#'
       path: %currentWorkingDirectory%/src/Commands/BaseCommands.php
     -
       message: '#Parameter \#1 \$roboClass of class [a-zA-Z0-9\\_]+ constructor expects string\|null, array\<int, string\> given.#'
       path: %currentWorkingDirectory%/psh-toolbelt
+    -
+      message: '#Variable \$targetFile might not be defined.#'
+      path: %currentWorkingDirectory%/src/Commands/BackupCommands.php

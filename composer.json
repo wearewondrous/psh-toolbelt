@@ -56,11 +56,7 @@
         "cbf": "./vendor/bin/phpcbf"
     },
     "extra": {
-        "patches": {
-            "boedah/robo-drush": {
-                "Drupal 8 cache clear": "https://patch-diff.githubusercontent.com/raw/boedah/robo-drush/pull/16.patch"
-            }
-        }
+        "patches": {}
     },
     "type": "library",
     "license": "GPL-2.0-or-later",

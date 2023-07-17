@@ -103,6 +103,7 @@ class UpdateCommands extends BaseCommands {
    * @throws \Robo\Exception\TaskException
    */
   private function exportImportDbAndConfig(string $branch, string $currentBranch, string $app_dir) : void {
+    dd(1);
     $this->yell('Export config on remote', 50, 'default');
     $drushPath = Robo::config()->get('drush.path');
     $this->_exec(sprintf("platform ssh -e %s '%s cex -y'", $branch, $drushPath));
@@ -128,15 +129,12 @@ class UpdateCommands extends BaseCommands {
     $this->_exec(sprintf('platform db:dump -e %s -f %s%s -y', $branch, $app_dir, $dbFileName));
 
     $this->yell('🦄 Applying the magic', 50, 'default');
-    $this->taskDrushStack(Robo::config()->get('drush.path'))
-      ->stopOnFail()
-      ->dir($app_dir)
-      ->siteAlias($this->drushAlias)
+    $this->taskExecStack()
       ->exec(sprintf('%s -y sql-drop', $this->drushAlias))
-      ->exec(sprintf('%s -y sql-cli < %s', $this->drushAlias, $dbFileName))
-      ->cacheRebuild()
-      ->updateDb()
-      ->exec(sprintf('%s -y config-import', $this->drushAlias))
+      ->exec(sprintf('%s -y sql-cli < %s', $this->drushAlias, $dbFileName))->stopOnFail()
+      ->exec(sprintf('%s cache-rebuild', $this->drushAlias))->stopOnFail()
+      ->exec(sprintf('%s updatedb', $this->drushAlias))->stopOnFail()
+      ->exec(sprintf('%s -y config-import', $this->drushAlias))->stopOnFail()
       ->run();
     $this->yell('Go back initital Git branch', 50, 'default');
 

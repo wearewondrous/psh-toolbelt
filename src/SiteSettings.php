@@ -285,7 +285,7 @@ class SiteSettings {
     $this->settings['file_temp_path'] = '/tmp';
 
     assert_options(\ASSERT_ACTIVE, TRUE);
-    Handle::register();
+    assert_options(ASSERT_EXCEPTION, TRUE);
     // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
 

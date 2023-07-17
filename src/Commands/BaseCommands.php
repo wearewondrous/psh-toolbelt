@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-use Boedah\Robo\Task\Drush\loadTasks;
 use Platformsh\ConfigReader\Config as PshConfig;
 use Robo\Robo;
 use Robo\Tasks;
@@ -19,7 +18,6 @@ use function implode;
  * @see http://robo.li/
  */
 abstract class BaseCommands extends Tasks {
-  use loadTasks;
 
   public const FILE_DELIMITER = '--';
 

@@ -34,7 +34,6 @@ class TestCommands extends BaseCommands {
   public function testLocalDrush() : void {
     $this->taskExec(Robo::config()->get('drush.path'))
       ->arg('status')
-      ->option('alias', $this->drushAlias)
       ->run();
   }
 

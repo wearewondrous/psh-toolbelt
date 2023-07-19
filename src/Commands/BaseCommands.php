@@ -37,6 +37,11 @@ abstract class BaseCommands extends Tasks {
   protected $drushAlias = '';
 
   /**
+   * @var string
+   */
+  protected $containerCommand = '';
+
+  /**
    * @var \Platformsh\ConfigReader\Config
    */
   protected $pshConfig;
@@ -74,6 +79,8 @@ abstract class BaseCommands extends Tasks {
             Robo::config()->get('drush.alias'),
           ]
       );
+
+    $this->containerCommand = Robo::config()->get('local_container.name');
 
     $this->pshConfig = new PshConfig();
 

@@ -128,8 +128,10 @@ class UpdateCommands extends BaseCommands {
     $this->_exec(sprintf('platform db:dump -e %s -f %s%s -y', $branch, $app_dir, $dbFileName));
 
     $this->yell('🦄 Applying the magic', 50, 'default');
+    /** @phpstan-ignore-next-line */
     $this->taskExecStack()
       ->stopOnFail()
+      ->dir($app_dir)
       ->exec(sprintf('%s %s -y sql-drop', $this->containerCommand, $drushPath))
       ->exec(sprintf('%s %s -y sql-cli < %s', $this->containerCommand, $drushPath, $dbFileName))
       ->exec(sprintf('%s %s cache-rebuild', $this->containerCommand, $drushPath))

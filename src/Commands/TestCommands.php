@@ -32,6 +32,7 @@ class TestCommands extends BaseCommands {
    * @throws \Robo\Exception\TaskException
    */
   public function testLocalDrush() : void {
+    /** @phpstan-ignore-next-line */
     $this->taskExec(Robo::config()->get('drush.path'))
       ->arg('status')
       ->run();

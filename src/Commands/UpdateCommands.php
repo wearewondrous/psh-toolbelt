@@ -55,7 +55,7 @@ class UpdateCommands extends BaseCommands {
     $workspaceChanges = shell_exec(sprintf('cd %s && git status --porcelain', $app_dir));
     $currentBranch    = shell_exec(sprintf('cd %s && git rev-parse --abbrev-ref HEAD', $app_dir));
 
-    if ($currentBranch === NULL) {
+    if ($currentBranch === NULL || $currentBranch === FALSE) {
       $currentBranch = 'master';
     }
 
@@ -128,15 +128,15 @@ class UpdateCommands extends BaseCommands {
     $this->_exec(sprintf('platform db:dump -e %s -f %s%s -y', $branch, $app_dir, $dbFileName));
 
     $this->yell('🦄 Applying the magic', 50, 'default');
-    $this->taskDrushStack(Robo::config()->get('drush.path'))
+    /** @phpstan-ignore-next-line */
+    $this->taskExecStack()
       ->stopOnFail()
       ->dir($app_dir)
-      ->siteAlias($this->drushAlias)
-      ->exec(sprintf('%s -y sql-drop', $this->drushAlias))
-      ->exec(sprintf('%s -y sql-cli < %s', $this->drushAlias, $dbFileName))
-      ->cacheRebuild()
-      ->updateDb()
-      ->exec(sprintf('%s -y config-import', $this->drushAlias))
+      ->exec(sprintf('%s %s -y sql-drop', $this->containerCommand, $drushPath))
+      ->exec(sprintf('%s %s -y sql-cli < %s', $this->containerCommand, $drushPath, $dbFileName))
+      ->exec(sprintf('%s %s cache-rebuild', $this->containerCommand, $drushPath))
+      ->exec(sprintf('%s %s -y updatedb', $this->containerCommand, $drushPath))
+      ->exec(sprintf('%s %s -y config-import', $this->containerCommand, $drushPath))
       ->run();
     $this->yell('Go back initital Git branch', 50, 'default');
 

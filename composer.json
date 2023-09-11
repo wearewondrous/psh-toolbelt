@@ -1,6 +1,6 @@
 {
     "name": "wearewondrous/psh-toolbelt",
-    "description": "Platform sh tools for a Drupal 9 and php 8.0.",
+    "description": "Platform sh tools for a Drupal 10 and php 8.1.",
     "authors": [
         {
             "name": "WONDROUS LTD",
@@ -9,9 +9,9 @@
     ],
     "keywords": [
         "platform.sh",
-        "drupal-9",
+        "drupal-10",
         "lando",
-        "php 8.0"
+        "php 8.1"
     ],
     "autoload": {
         "psr-4": {
@@ -31,22 +31,22 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "cweagans/composer-patches": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true
         }
     },
     "bin":["psh-toolbelt"],
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "ext-pdo": "*",
-        "aws/aws-sdk-php": "^3.91",
-        "boedah/robo-drush": "^4.2.0",
-        "consolidation/robo": "^1.4.9",
+        "aws/aws-sdk-php": "^3.2",
+        "consolidation/robo": "^4.0",
         "cweagans/composer-patches": "~1.0",
-        "guzzlehttp/psr7": "^1.5",
+        "guzzlehttp/psr7": "^2.5",
         "php-http/curl-client": "^2.0",
         "platformsh/config-reader": "^2.1",
-        "sentry/sdk": "^3.1",
+        "sentry/sdk": "^3.5",
         "vlucas/phpdotenv": "^5.3"
     },
     "scripts": {
@@ -56,11 +56,7 @@
         "cbf": "./vendor/bin/phpcbf"
     },
     "extra": {
-        "patches": {
-            "boedah/robo-drush": {
-                "Drupal 8 cache clear": "https://patch-diff.githubusercontent.com/raw/boedah/robo-drush/pull/16.patch"
-            }
-        }
+        "patches": {}
     },
     "type": "library",
     "license": "GPL-2.0-or-later",
@@ -74,14 +70,14 @@
     "require-dev": {
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
         "drupal/coder": "^8.3",
-        "drupal/core-recommended": "^9.2",
+        "drupal/core-recommended": "^10.1",
         "mikey179/vfsstream": "^1.6",
-        "phpstan/extension-installer": "^1.0",
-        "phpstan/phpstan": "^0.12",
-        "phpstan/phpstan-deprecation-rules": "^0.12",
-        "phpstan/phpstan-phpunit": "^0.12",
-        "phpstan/phpstan-strict-rules": "^0.12",
-        "phpunit/phpunit": "^8.1.5",
-        "squizlabs/php_codesniffer": "^3.6"
+        "phpstan/extension-installer": "^1.3",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-deprecation-rules": "^1.1",
+        "phpstan/phpstan-phpunit": "^1.3",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpunit/phpunit": "9.5.0",
+        "squizlabs/php_codesniffer": "^3.7"
     }
 }

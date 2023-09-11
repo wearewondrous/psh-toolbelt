@@ -199,9 +199,9 @@ class SiteSettings {
     }
 
     if (
-      $this->roboConfig->get('solr_relationships') === NULL 
+      $this->roboConfig->get('solr_relationships') === NULL
       || count($this->roboConfig->get('solr_relationships')) === 0
-    ){
+    ) {
       return;
     }
 
@@ -213,8 +213,10 @@ class SiteSettings {
       $searchApiMachineName = 'search_api.server.' . $config['machine_name'];
 
       $this->pshConfig->registerFormatter('drupal-solr', function ($solr) {
+        /** @var string|false $solrPath */
+        $solrPath = substr($solr['path'], 5);
         return [
-          'core' => substr($solr['path'], 5) ?: 'main',
+          'core' => $solrPath !== FALSE ? $solrPath : 'main',
           'path' => '',
           'host' => $solr['host'],
           'port' => $solr['port'],
@@ -283,7 +285,7 @@ class SiteSettings {
     $this->settings['file_temp_path'] = '/tmp';
 
     assert_options(\ASSERT_ACTIVE, TRUE);
-    Handle::register();
+    assert_options(ASSERT_EXCEPTION, TRUE);
     // Verbose error logging.
     $this->config['system.logging']['error_level'] = 'verbose';
 

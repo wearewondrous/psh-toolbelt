@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace wearewondrous\PshToolbelt\Commands;
 
-use Boedah\Robo\Task\Drush\loadTasks;
 use Platformsh\ConfigReader\Config as PshConfig;
 use Robo\Robo;
 use Robo\Tasks;
@@ -19,7 +18,6 @@ use function implode;
  * @see http://robo.li/
  */
 abstract class BaseCommands extends Tasks {
-  use loadTasks;
 
   public const FILE_DELIMITER = '--';
 
@@ -37,6 +35,11 @@ abstract class BaseCommands extends Tasks {
    * @var string
    */
   protected $drushAlias = '';
+
+  /**
+   * @var string
+   */
+  protected $containerCommand = '';
 
   /**
    * @var \Platformsh\ConfigReader\Config
@@ -76,6 +79,8 @@ abstract class BaseCommands extends Tasks {
             Robo::config()->get('drush.alias'),
           ]
       );
+
+    $this->containerCommand = Robo::config()->get('local_container.name');
 
     $this->pshConfig = new PshConfig();
 

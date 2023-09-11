@@ -54,6 +54,9 @@ solr_relationships:
 #    core: extraindex
 #    machine_name: extraindex
 
+local_container:
+  name: lando
+
 lando:
   disable_cache: true
   host: my-website.lndo.site

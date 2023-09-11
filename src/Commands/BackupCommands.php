@@ -7,6 +7,7 @@ namespace wearewondrous\PshToolbelt\Commands;
 use Aws\S3\MultipartUploader;
 use Aws\S3\S3Client;
 use Robo\Robo;
+use Sentry\Severity;
 use function array_pop;
 use function closedir;
 use function date;
@@ -22,7 +23,6 @@ use function strtotime;
 use function time;
 use function trim;
 use function unlink;
-use Sentry\Severity;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -75,7 +75,7 @@ class BackupCommands extends BaseCommands {
       );
     \Sentry\init(['dsn' => $this->getEnv('SENTRY_DSN')]);
 
-    $this->s3Client      = new S3Client(
+    $this->s3Client = new S3Client(
           [
             'version' => Robo::config()->get('storage.s3.version'),
             'region' => Robo::config()->get('storage.s3.region'),
@@ -90,6 +90,9 @@ class BackupCommands extends BaseCommands {
 
   /**
    * Backup current branch to AWS, including files and db.
+   *
+   * @param array $opt
+   *   $force Ignore config and force uploading the current environment.
    *
    * @throws \Exception
    *
@@ -252,6 +255,7 @@ class BackupCommands extends BaseCommands {
 
   private function getLastModifiedFromFolder(string $folderName) : int {
     $fileParts = explode(self::FILE_DELIMITER, $folderName);
+    /** @var mixed|null $datetime */
     $datetime = array_pop($fileParts);
 
     if ($datetime === NULL) {
@@ -306,8 +310,8 @@ class BackupCommands extends BaseCommands {
     }
     finally {
       $fileDeleted = unlink($pathToFile);
-      
-      if($fileDeleted !== FALSE) {
+
+      if ($fileDeleted !== FALSE) {
         \Sentry\captureMessage(
           "Successfully purged temp file: " . $pathToFile,
           Severity::info()
@@ -388,8 +392,8 @@ class BackupCommands extends BaseCommands {
       }
       finally {
         $fileDeleted = unlink($targetFile);
-        
-        if($fileDeleted !== FALSE) {
+
+        if ($fileDeleted !== FALSE) {
           \Sentry\captureMessage(
             "Successfully purged temp file: " . $targetFile,
             Severity::info()

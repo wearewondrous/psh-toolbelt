@@ -91,7 +91,7 @@ class BackupCommands extends BaseCommands {
   /**
    * Backup current branch to AWS, including files and db.
    *
-   * @param array<string, bool> $opt
+   * @param array $opt
    *   $force Ignore config and force uploading the current environment.
    *
    * @throws \Exception

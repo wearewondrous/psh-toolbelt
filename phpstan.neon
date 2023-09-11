@@ -20,3 +20,6 @@ parameters:
     -
       message: '#Variable \$targetFile might not be defined.#'
       path: %currentWorkingDirectory%/src/Commands/BackupCommands.php
+    -
+      message: '#Method wearewondrous\\PshToolbelt\\Commands\\BackupCommands::backupBranch\(\) has parameter \$opt with no value type specified in iterable type array.#'
+      path: %currentWorkingDirectory%/src/Commands/BackupCommands.php

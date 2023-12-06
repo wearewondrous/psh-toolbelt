@@ -46,7 +46,7 @@
         "guzzlehttp/psr7": "^2.5",
         "php-http/curl-client": "^2.0",
         "platformsh/config-reader": "^2.1",
-        "sentry/sdk": "^3.5 || ^4.0",
+        "sentry/sentry": "^4.1",
         "vlucas/phpdotenv": "^5.3"
     },
     "scripts": {

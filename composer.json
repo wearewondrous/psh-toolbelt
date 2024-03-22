@@ -43,7 +43,6 @@
         "aws/aws-sdk-php": "^3.2",
         "consolidation/robo": "^4.0",
         "cweagans/composer-patches": "~1.0",
-        "drush/drush": "^12.5",
         "guzzlehttp/psr7": "^2.5",
         "php-http/curl-client": "^2.0",
         "platformsh/config-reader": "^2.1",

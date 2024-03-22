@@ -7,7 +7,6 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use wearewondrous\PshToolbelt\Commands\BackupCommands;
 use wearewondrous\PshToolbelt\Commands\TestCommands;
 use wearewondrous\PshToolbelt\Commands\UpdateCommands;
-use wearewondrous\PshToolbelt\Commands\ConfigExcludeCommands;
 
 $pharPath = \Phar::running(true);
 
@@ -29,7 +28,6 @@ $commandClasses = [
   UpdateCommands::class,
   BackupCommands::class,
   TestCommands::class,
-  ConfigExcludeCommands::class,
 ];
 
 // Define our Runner, and pass it the command classes we provide.

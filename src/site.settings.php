@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 use Platformsh\ConfigReader\Config as PlatformshConfig;
 use wearewondrous\PshToolbelt\ConfigFileReader;
